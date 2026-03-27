@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import MemoList from '../views/MemoList.vue'
 import MemoEditor from '../views/MemoEditor.vue'
+import CalendarPage from '../views/CalendarPage.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -9,6 +10,11 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: MemoList
+    },
+    {
+      path: '/calendar',
+      name: 'calendar',
+      component: CalendarPage
     },
     {
       path: '/editor/:id?',

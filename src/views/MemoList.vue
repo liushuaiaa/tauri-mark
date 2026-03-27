@@ -35,7 +35,7 @@ function formatDate(ts: number) {
 <template>
   <div class="memo-list">
     <div class="header">
-      <h2>我的备忘录</h2>
+      <span></span>
       <ElButton type="primary" :icon="Plus" @click="router.push('/editor')">新建</ElButton>
     </div>
 

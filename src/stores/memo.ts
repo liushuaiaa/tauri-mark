@@ -34,5 +34,14 @@ export const useMemoStore = defineStore('memo', () => {
     await fetchMemos()
   }
 
-  return { memos, loading, fetchMemos, saveMemo, deleteMemo }
+  function getMemosByDate(date: Date): Memo[] {
+    return memos.value.filter(m => {
+      const d = new Date(m.updated_at)
+      return d.getFullYear() === date.getFullYear() &&
+        d.getMonth() === date.getMonth() &&
+        d.getDate() === date.getDate()
+    })
+  }
+
+  return { memos, loading, fetchMemos, saveMemo, deleteMemo, getMemosByDate }
 })

@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useMemoStore, type Memo } from '../stores/memo'
-import { ElButton, ElForm, ElFormItem, ElInput, ElMessage } from 'element-plus'
+import { ElButton, ElFormItem, ElInput, ElMessage } from 'element-plus'
 import { ArrowLeft } from '@element-plus/icons-vue'
 import { useRoute, useRouter } from 'vue-router'
+import { QuillEditor } from '@vueup/vue-quill'
+import '@vueup/vue-quill/dist/vue-quill.snow.css'
 
 const store = useMemoStore()
 const route = useRoute()
@@ -16,6 +18,8 @@ const saving = ref(false)
 
 onMounted(async () => {
   const memoId = route.params.id as string
+  const dateParam = route.query.date as string
+
   if (memoId) {
     id.value = memoId
     const memo = store.memos.find(m => m.id === memoId)
@@ -30,6 +34,8 @@ onMounted(async () => {
         content.value = fresh.content
       }
     }
+  } else if (dateParam) {
+    title.value = `${dateParam} 备忘录`
   }
 })
 
@@ -66,21 +72,29 @@ async function handleSave() {
       <ElButton type="primary" :loading="saving" @click="handleSave">保存</ElButton>
     </div>
 
-    <ElForm class="form">
+    <div class="form">
       <ElFormItem label="标题">
         <ElInput v-model="title" placeholder="请输入标题" maxlength="100" show-word-limit />
       </ElFormItem>
       <ElFormItem label="内容">
-        <ElInput v-model="content" type="textarea" placeholder="请输入内容" :rows="15" resize="vertical" />
+        <div class="editor-wrapper">
+          <QuillEditor
+            v-model:content="content"
+            content-type="html"
+            theme="snow"
+            toolbar="essential"
+            placeholder="请输入内容"
+          />
+        </div>
       </ElFormItem>
-    </ElForm>
+    </div>
   </div>
 </template>
 
 <style scoped>
 .memo-editor {
   padding: 24px;
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
 }
 .header {
@@ -89,6 +103,43 @@ async function handleSave() {
   margin-bottom: 20px;
 }
 .form {
-  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.editor-wrapper {
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  overflow: hidden;
+  width: 100%;
+}
+:deep(.ql-toolbar.ql-snow) {
+  border: none;
+  border-bottom: 1px solid #dcdfe6;
+  border-radius: 0;
+  padding: 8px;
+}
+:deep(.ql-container.ql-snow) {
+  border: none;
+  min-height: 400px;
+  font-size: 16px;
+  font-family: 'Microsoft YaHei', Arial, sans-serif;
+}
+:deep(.ql-editor) {
+  min-height: 400px;
+  font-family: 'Microsoft YaHei', Arial, sans-serif;
+}
+:deep(.ql-editor.ql-blank::before) {
+  font-style: normal;
+  color: #aaa;
+}
+:deep(.ql-snow .ql-stroke) {
+  stroke: #606266;
+}
+:deep(.ql-snow .ql-fill) {
+  fill: #606266;
+}
+:deep(.ql-snow .ql-picker) {
+  color: #606266;
 }
 </style>
