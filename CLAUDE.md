@@ -68,3 +68,43 @@ interface Memo {
 /* 样式代码 */
 </style>
 ```
+
+## 常见问题
+
+### Element Plus 日期组件类型
+`ElDatePicker` 的 `v-model` 类型应使用 `[Date, Date] | null`，不要使用 `DateModelType`：
+```typescript
+const dateRange = ref<[Date, Date] | null>(null)
+```
+
+### Tauri v2 窗口权限
+自定义窗口控件（关闭、最小化、最大化、拖动）需要在 `src-tauri/capabilities/default.json` 中添加权限：
+- `core:window:allow-close`
+- `core:window:allow-minimize`
+- `core:window:allow-maximize`
+- `core:window:allow-start-dragging`
+
+### 自定义光标效果状态持久化
+使用 `localStorage` + Vue `ref` + `watch` 实现：
+```typescript
+import { ref, watch } from 'vue'
+const STORAGE_KEY = 'cursor-effect-enabled'
+function getInitialValue(): boolean {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY)
+    if (stored !== null) return JSON.parse(stored)
+  } catch {}
+  return true
+}
+export const cursorEnabled = ref(getInitialValue())
+watch(cursorEnabled, (newVal) => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(newVal))
+  } catch {}
+})
+```
+
+### 自定义光标切换
+- 隐藏原生光标：给 `body` 添加 `cursor-hidden` class
+- 切换粒子效果显示：使用 CSS `display: none/block`，不要用 `v-if`（避免 DOM 重建导致动画丢失）
+- 重新启用时需要重新初始化粒子效果元素
