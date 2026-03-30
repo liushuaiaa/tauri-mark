@@ -46,12 +46,11 @@ import { useMemoStore } from '../stores/memo'
 import { ElButton, ElCard, ElDatePicker, ElEmpty, ElInput, ElMessage, ElMessageBox } from 'element-plus'
 import { Delete, Edit, Plus, Search } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
-import type { DateModelType } from 'element-plus'
 
 const store = useMemoStore()
 const router = useRouter()
 const searchQuery = ref('')
-const dateRange = ref<[DateModelType, DateModelType] | null>(null)
+const dateRange = ref<[Date, Date] | null>(null)
 
 onMounted(() => {
   store.fetchMemos()
