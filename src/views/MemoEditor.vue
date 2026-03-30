@@ -108,14 +108,14 @@ async function handleSave() {
   gap: 0;
 }
 .editor-wrapper {
-  border: 1px solid #dcdfe6;
+  border: 1px solid var(--color-border);
   border-radius: 4px;
   overflow: hidden;
   width: 100%;
 }
 :deep(.ql-toolbar.ql-snow) {
   border: none;
-  border-bottom: 1px solid #dcdfe6;
+  border-bottom: 1px solid var(--color-border);
   border-radius: 0;
   padding: 8px;
 }
@@ -131,15 +131,15 @@ async function handleSave() {
 }
 :deep(.ql-editor.ql-blank::before) {
   font-style: normal;
-  color: #aaa;
+  color: var(--color-text-disabled);
 }
 :deep(.ql-snow .ql-stroke) {
-  stroke: #606266;
+  stroke: var(--color-text-secondary);
 }
 :deep(.ql-snow .ql-fill) {
-  fill: #606266;
+  fill: var(--color-text-secondary);
 }
 :deep(.ql-snow .ql-picker) {
-  color: #606266;
+  color: var(--color-text-secondary);
 }
 </style>

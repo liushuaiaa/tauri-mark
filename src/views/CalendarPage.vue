@@ -52,7 +52,7 @@ function onDayClick(day: { date: Date }) {
   padding: 24px;
 }
 .calendar-container {
-  background: #fff;
+  background: var(--color-bg-card);
   border-radius: 8px;
   padding: 16px;
   height: 100%;
@@ -66,8 +66,8 @@ function onDayClick(day: { date: Date }) {
 }
 .calendar-container :deep(.vc-day) {
   min-height: 80px;
-  border-right: 1px solid #eee;
-  border-bottom: 1px solid #eee;
+  border-right: 1px solid var(--color-border-light);
+  border-bottom: 1px solid var(--color-border-light);
   box-sizing: border-box;
   padding: 4px;
 }
@@ -81,10 +81,10 @@ function onDayClick(day: { date: Date }) {
   transition: background 0.15s;
 }
 .calendar-container :deep(.vc-day-content:hover) {
-  background: #f5f7fa;
+  background: var(--color-secondary-light);
 }
 .calendar-container :deep(.vc-highlight) {
-  background: #409eff !important;
+  background: var(--color-primary) !important;
   border-radius: 4px;
 }
 .calendar-container :deep(.vc-outside) {
@@ -100,12 +100,15 @@ function onDayClick(day: { date: Date }) {
   transition: background 0.15s;
 }
 .calendar-container :deep(.vc-outside .vc-day-content:hover) {
-  background: #f5f7fa;
+  background: var(--color-secondary-light);
 }
 .calendar-container :deep(.vc-day:nth-child(7)) {
   border-right: none;
 }
 .calendar-container :deep(.vc-week:last-child .vc-day) {
   border-bottom: none;
+}
+.calendar-container :deep(.vc-dot) {
+  background-color: var(--color-primary);
 }
 </style>

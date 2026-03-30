@@ -202,6 +202,7 @@ body,
 .app-root {
   height: 100%;
   font-family: 'Microsoft YaHei', Arial, sans-serif;
+  background-color: var(--color-bg-page);
 }
 * {
   cursor: none !important;
@@ -244,5 +245,23 @@ body,
   left: -9999px;
   top: -9999px;
   transform: rotate(-45deg);
+}
+
+/* Element Plus Theme Override - Xiaomi Orange */
+.el-button--primary {
+  --el-button-bg-color: #FF6700;
+  --el-button-border-color: #FF6700;
+  --el-button-hover-bg-color: #FF8533;
+  --el-button-hover-border-color: #FF8533;
+  --el-button-active-bg-color: #E65C00;
+  --el-button-active-border-color: #E65C00;
+}
+.el-button--primary.is-link {
+  --el-button-text-color: #FF6700;
+  --el-button-hover-text-color: #FF8533;
+}
+.el-link--primary {
+  --el-link-text-color: #FF6700;
+  --el-link-hover-text-color: #FF8533;
 }
 </style>

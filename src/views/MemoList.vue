@@ -129,15 +129,20 @@ function stripHtml(html: string): string {
 }
 .memo-card {
   cursor: default;
+  border-color: var(--color-border);
+}
+.memo-card:hover {
+  border-color: var(--color-secondary);
 }
 .card-title {
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 8px;
+  color: var(--color-text-primary);
 }
 .card-preview {
   font-size: 14px;
-  color: #666;
+  color: var(--color-text-secondary);
   margin-bottom: 12px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -150,7 +155,7 @@ function stripHtml(html: string): string {
 }
 .card-date {
   font-size: 12px;
-  color: #999;
+  color: var(--color-text-disabled);
 }
 .card-actions {
   display: flex;

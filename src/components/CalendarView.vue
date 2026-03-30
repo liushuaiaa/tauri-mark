@@ -10,8 +10,8 @@
         <span class="day-number">{{ day.day }}</span>
         <span v-if="hasMemo(day.date)" class="memo-indicator">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="12" viewBox="0 0 14 12">
-            <path d="M0 0v12h14V3.5L10 0H0z" fill="#FFD700" stroke="#DAA520" stroke-width="0.5"/>
-            <path d="M0 3.5h14" stroke="#DAA520" stroke-width="0.5"/>
+            <path d="M0 0v12h14V3.5L10 0H0z" fill="#FF6700" stroke="#E65C00" stroke-width="0.5"/>
+            <path d="M0 3.5h14" stroke="#E65C00" stroke-width="0.5"/>
           </svg>
         </span>
       </div>
