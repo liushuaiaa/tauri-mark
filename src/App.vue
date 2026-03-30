@@ -1,123 +1,3 @@
-<script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
-import AppSidebar from './components/AppSidebar.vue'
-import { sidebarCollapsed } from './stores/sidebar'
-import { useRoute } from 'vue-router'
-
-const route = useRoute()
-const showSidebar = computed(() => route.name !== 'editor')
-
-const canvasRef = ref<HTMLCanvasElement | null>(null)
-const cursorRef = ref<HTMLDivElement | null>(null)
-let ctx: CanvasRenderingContext2D | null = null
-let animFrame = 0
-const stars: { x: number; y: number; vx: number; vy: number; alpha: number; size: number; hue: number }[] = []
-let mouseX = -100
-let mouseY = -100
-let lastStarTime = 0
-
-function onMouseMove(e: MouseEvent) {
-  mouseX = e.clientX
-  mouseY = e.clientY
-  if (cursorRef.value) {
-    cursorRef.value.style.left = (mouseX - 16) + 'px'
-    cursorRef.value.style.top = (mouseY - 16) + 'px'
-  }
-  for (let i = 0; i < 4; i++) {
-    stars.push({
-      x: mouseX + (Math.random() - 0.5) * 20,
-      y: mouseY + (Math.random() - 0.5) * 20,
-      vx: (Math.random() - 0.5) * 3,
-      vy: Math.random() * -3 - 1,
-      alpha: 1,
-      size: Math.random() * 3 + 1.5,
-      hue: Math.random() * 60 + 30 // gold range
-    })
-  }
-}
-
-function drawStars(timestamp: number) {
-  if (!ctx || !canvasRef.value) {
-    animFrame = requestAnimationFrame(drawStars)
-    return
-  }
-  const canvas = canvasRef.value
-  ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-  // Periodic stars at mouse position while hovering
-  if (mouseX >= 0 && timestamp - lastStarTime > 30) {
-    lastStarTime = timestamp
-    for (let i = 0; i < 2; i++) {
-      stars.push({
-        x: mouseX + (Math.random() - 0.5) * 30,
-        y: mouseY + (Math.random() - 0.5) * 30,
-        vx: (Math.random() - 0.5) * 2,
-        vy: Math.random() * -2 - 0.5,
-        alpha: 0.9,
-        size: Math.random() * 2 + 1,
-        hue: Math.random() * 60 + 30
-      })
-    }
-  }
-
-  for (let i = stars.length - 1; i >= 0; i--) {
-    const s = stars[i]
-    s.x += s.vx
-    s.y += s.vy
-    s.alpha -= 0.025
-
-    if (s.alpha <= 0) {
-      stars.splice(i, 1)
-      continue
-    }
-
-    ctx.save()
-    ctx.globalAlpha = s.alpha
-    ctx.fillStyle = `hsl(${s.hue}, 100%, 70%)`
-    ctx.shadowColor = `hsl(${s.hue}, 100%, 70%)`
-    ctx.shadowBlur = 6
-    ctx.beginPath()
-    const spikes = 4
-    const outer = s.size
-    const inner = s.size * 0.4
-    for (let j = 0; j < spikes * 2; j++) {
-      const r = j % 2 === 0 ? outer : inner
-      const angle = (j * Math.PI) / spikes - Math.PI / 2
-      const px = s.x + Math.cos(angle) * r
-      const py = s.y + Math.sin(angle) * r
-      if (j === 0) ctx.moveTo(px, py)
-      else ctx.lineTo(px, py)
-    }
-    ctx.closePath()
-    ctx.fill()
-    ctx.restore()
-  }
-
-  animFrame = requestAnimationFrame(drawStars)
-}
-
-function resizeCanvas() {
-  if (!canvasRef.value) return
-  canvasRef.value.width = window.innerWidth
-  canvasRef.value.height = window.innerHeight
-}
-
-onMounted(() => {
-  if (!canvasRef.value) return
-  ctx = canvasRef.value.getContext('2d')
-  resizeCanvas()
-  window.addEventListener('resize', resizeCanvas)
-  window.addEventListener('mousemove', onMouseMove)
-  animFrame = requestAnimationFrame(drawStars)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('resize', resizeCanvas)
-  window.removeEventListener('mousemove', onMouseMove)
-  cancelAnimationFrame(animFrame)
-})
-</script>
-
 <template>
   <div class="app-root">
     <el-container class="app-layout">
@@ -136,13 +16,190 @@ onUnmounted(() => {
   <canvas ref="canvasRef" class="star-canvas" />
 </template>
 
+<script setup lang="ts">
+import { computed, onMounted, onUnmounted, ref } from 'vue'
+import AppSidebar from './components/AppSidebar.vue'
+import { sidebarCollapsed } from './stores/sidebar'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+const showSidebar = computed(() => route.name !== 'editor')
+
+const canvasRef = ref<HTMLCanvasElement | null>(null)
+const cursorRef = ref<HTMLDivElement | null>(null)
+let ctx: CanvasRenderingContext2D | null = null
+let animFrame = 0
+const stars: {
+  x: number
+  y: number
+  vx: number
+  vy: number
+  alpha: number
+  size: number
+  hue: number
+  rotation: number
+}[] = []
+let mouseX = -100
+let mouseY = -100
+let lastStarTime = 0
+let isMouseMoving = false
+let mouseMoveTimeout: number | null = null
+let trailHue = 120 // start with green
+
+function onMouseMove(e: MouseEvent) {
+  mouseX = e.clientX
+  mouseY = e.clientY
+  if (cursorRef.value) {
+    cursorRef.value.style.left = mouseX - 18 + 'px'
+    cursorRef.value.style.top = mouseY - 18 + 'px'
+  }
+  isMouseMoving = true
+  if (mouseMoveTimeout !== null) {
+    clearTimeout(mouseMoveTimeout)
+  }
+  mouseMoveTimeout = window.setTimeout(() => {
+    isMouseMoving = false
+    mouseMoveTimeout = null
+  }, 100)
+
+  // Cycle hue: green (120) -> red (0) -> yellow (60) -> green again
+  trailHue = (trailHue - 2) % 360
+  if (trailHue < 0) trailHue += 360
+
+  if (isMouseMoving) {
+    stars.push({
+      x: mouseX + 14 + Math.random() * 16,
+      y: mouseY + 18 + Math.random() * 10,
+      vx: Math.random() * 0.5 + 0.2,
+      vy: Math.random() * 0.3 + 0.1,
+      alpha: 1,
+      size: Math.random() * 1.5 + 2,
+      hue: (trailHue + Math.random() * 30 - 15 + 360) % 360,
+      rotation: Math.random() * Math.PI * 2,
+    })
+  }
+}
+
+function drawStars(timestamp: number) {
+  if (!ctx || !canvasRef.value) {
+    animFrame = requestAnimationFrame(drawStars)
+    return
+  }
+  const canvas = canvasRef.value
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+  // Periodic leaf particles at mouse position while hovering
+  if (mouseX >= 0 && timestamp - lastStarTime > 80 && isMouseMoving) {
+    lastStarTime = timestamp
+    stars.push({
+      x: mouseX + 10 + Math.random() * 12,
+      y: mouseY + 14 + Math.random() * 8,
+      vx: Math.random() * 0.4 + 0.15,
+      vy: Math.random() * 0.25 + 0.08,
+      alpha: 0.85,
+      size: Math.random() * 1.5 + 2,
+      hue: (trailHue + Math.random() * 30 - 15 + 360) % 360,
+      rotation: Math.random() * Math.PI * 2,
+    })
+  }
+
+  for (let i = stars.length - 1; i >= 0; i--) {
+    const s = stars[i]
+    s.x += s.vx
+    s.y += s.vy
+    s.rotation += 0.015
+    s.alpha -= 0.012
+
+    if (s.alpha <= 0) {
+      stars.splice(i, 1)
+      continue
+    }
+
+    ctx.save()
+    ctx.globalAlpha = s.alpha
+    ctx.fillStyle = `hsl(${s.hue}, 90%, 55%)`
+    ctx.shadowColor = `hsl(${s.hue}, 90%, 55%)`
+    ctx.shadowBlur = 6
+    ctx.translate(s.x, s.y)
+    ctx.rotate(s.rotation)
+    // Draw maple leaf shape (枫叶)
+    ctx.beginPath()
+    const size = s.size
+    //枫叶轮廓 - 11个尖角
+    const points = [
+      [0, -size], // 顶部
+      [-size * 0.3, -size * 0.7],
+      [-size * 0.5, -size * 0.85],
+      [-size * 0.7, -size * 0.6],
+      [-size * 0.85, -size * 0.7],
+      [-size * 0.7, -size * 0.3],
+      [-size, -size * 0.15],
+      [-size * 0.7, 0],
+      [-size * 0.85, size * 0.4],
+      [-size * 0.5, size * 0.3],
+      [-size * 0.3, size * 0.5],
+      [0, size * 0.9], // 底部
+      [size * 0.3, size * 0.5],
+      [size * 0.5, size * 0.3],
+      [size * 0.85, size * 0.4],
+      [size * 0.7, 0],
+      [size, -size * 0.15],
+      [size * 0.7, -size * 0.3],
+      [size * 0.85, -size * 0.7],
+      [size * 0.7, -size * 0.6],
+      [size * 0.5, -size * 0.85],
+      [size * 0.3, -size * 0.7],
+    ]
+    ctx.moveTo(points[0][0], points[0][1])
+    for (let j = 1; j < points.length; j++) {
+      ctx.lineTo(points[j][0], points[j][1])
+    }
+    ctx.closePath()
+    ctx.fill()
+    ctx.restore()
+  }
+
+  animFrame = requestAnimationFrame(drawStars)
+}
+
+function resizeCanvas() {
+  if (!canvasRef.value) return
+  canvasRef.value.width = window.innerWidth
+  canvasRef.value.height = window.innerHeight
+}
+
+function onMouseEnter() {
+  isMouseMoving = true
+}
+
+onMounted(() => {
+  if (!canvasRef.value) return
+  ctx = canvasRef.value.getContext('2d')
+  resizeCanvas()
+  window.addEventListener('resize', resizeCanvas)
+  document.addEventListener('mousemove', onMouseMove)
+  document.addEventListener('mouseenter', onMouseEnter)
+  animFrame = requestAnimationFrame(drawStars)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', resizeCanvas)
+  document.removeEventListener('mousemove', onMouseMove)
+  document.removeEventListener('mouseenter', onMouseEnter)
+  cancelAnimationFrame(animFrame)
+})
+</script>
+
 <style>
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
-html, body, #app, .app-root {
+html,
+body,
+#app,
+.app-root {
   height: 100%;
   font-family: 'Microsoft YaHei', Arial, sans-serif;
 }
@@ -177,14 +234,15 @@ html, body, #app, .app-root {
 }
 .custom-cursor {
   position: fixed;
-  width: 32px;
-  height: 32px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M16 2 C10 2 4 8 4 16 C4 24 10 30 16 30 C16 22 22 16 30 10 C22 10 16 2 16 2Z' fill='%2340b040' stroke='%23207020' stroke-width='1'/%3E%3C/svg%3E");
+  width: 40px;
+  height: 40px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cdefs%3E%3ClinearGradient id='leafGrad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2366cc66'/%3E%3Cstop offset='40%25' stop-color='%2355b855'/%3E%3Cstop offset='100%25' stop-color='%2344a048'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M20 3 C15 4 8 8 6 15 C4 22 6 30 12 35 C14 37 17 38 20 38 C22 36 25 30 26 24 C27 18 26 12 24 7 C23 5 21 4 20 3Z' fill='url(%23leafGrad)'/%3E%3Cpath d='M20 5 L20 36' stroke='%23448850' stroke-width='1' fill='none' opacity='0.8'/%3E%3Cpath d='M20 12 C17 14 14 16 12 18' stroke='%23448850' stroke-width='0.7' fill='none' opacity='0.7'/%3E%3Cpath d='M20 12 C23 14 26 16 28 18' stroke='%23448850' stroke-width='0.7' fill='none' opacity='0.7'/%3E%3Cpath d='M20 20 C17 22 14 25 11 28' stroke='%23448850' stroke-width='0.6' fill='none' opacity='0.6'/%3E%3Cpath d='M20 20 C23 22 26 25 29 28' stroke='%23448850' stroke-width='0.6' fill='none' opacity='0.6'/%3E%3Cpath d='M20 28 C18 30 16 32 14 34' stroke='%23448850' stroke-width='0.5' fill='none' opacity='0.5'/%3E%3Cpath d='M20 28 C22 30 24 32 26 34' stroke='%23448850' stroke-width='0.5' fill='none' opacity='0.5'/%3E%3Cpath d='M19 37 C18 38 17 39 18 40' stroke='%23554430' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-size: contain;
   pointer-events: none;
   z-index: 2147483646;
   left: -9999px;
   top: -9999px;
+  transform: rotate(-45deg);
 }
 </style>

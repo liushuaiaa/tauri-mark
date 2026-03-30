@@ -1,3 +1,29 @@
+<template>
+  <div class="memo-editor">
+    <div class="header">
+      <ElButton :icon="ArrowLeft" @click="router.back()">返回</ElButton>
+      <ElButton type="primary" :loading="saving" @click="handleSave">保存</ElButton>
+    </div>
+
+    <div class="form">
+      <ElFormItem label="标题">
+        <ElInput v-model="title" placeholder="请输入标题" maxlength="100" show-word-limit />
+      </ElFormItem>
+      <ElFormItem label="内容">
+        <div class="editor-wrapper">
+          <QuillEditor
+            v-model:content="content"
+            content-type="html"
+            theme="snow"
+            toolbar="essential"
+            placeholder="请输入内容"
+          />
+        </div>
+      </ElFormItem>
+    </div>
+  </div>
+</template>
+
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useMemoStore, type Memo } from '../stores/memo'
@@ -64,32 +90,6 @@ async function handleSave() {
   }
 }
 </script>
-
-<template>
-  <div class="memo-editor">
-    <div class="header">
-      <ElButton :icon="ArrowLeft" @click="router.back()">返回</ElButton>
-      <ElButton type="primary" :loading="saving" @click="handleSave">保存</ElButton>
-    </div>
-
-    <div class="form">
-      <ElFormItem label="标题">
-        <ElInput v-model="title" placeholder="请输入标题" maxlength="100" show-word-limit />
-      </ElFormItem>
-      <ElFormItem label="内容">
-        <div class="editor-wrapper">
-          <QuillEditor
-            v-model:content="content"
-            content-type="html"
-            theme="snow"
-            toolbar="essential"
-            placeholder="请输入内容"
-          />
-        </div>
-      </ElFormItem>
-    </div>
-  </div>
-</template>
 
 <style scoped>
 .memo-editor {

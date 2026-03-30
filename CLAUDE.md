@@ -46,3 +46,25 @@ interface Memo {
   updated_at: number // Unix 时间戳（毫秒）
 }
 ```
+
+## 代码规范
+
+### Vue 文件结构
+所有 `.vue` 文件必须遵循以下结构顺序：
+1. `<template>` - 模板部分，放在最上面
+2. `<script setup lang="ts">` - 逻辑部分，放在中间
+3. `<style scoped>` - 样式部分，放在最下面
+
+```vue
+<template>
+  <!-- 模板内容 -->
+</template>
+
+<script setup lang="ts">
+// 逻辑代码
+</script>
+
+<style scoped>
+/* 样式代码 */
+</style>
+```

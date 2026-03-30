@@ -1,16 +1,3 @@
-<script setup lang="ts">
-import { Burger, Calendar, Memo } from '@element-plus/icons-vue'
-import { sidebarCollapsed } from '../stores/sidebar'
-
-function toggle() {
-  sidebarCollapsed.value = !sidebarCollapsed.value
-}
-
-function navigate() {
-  sidebarCollapsed.value = true
-}
-</script>
-
 <template>
   <aside class="sidebar" :class="{ collapsed: sidebarCollapsed }">
     <div class="sidebar-header">
@@ -30,6 +17,19 @@ function navigate() {
     </nav>
   </aside>
 </template>
+
+<script setup lang="ts">
+import { Burger, Calendar, Memo } from '@element-plus/icons-vue'
+import { sidebarCollapsed } from '../stores/sidebar'
+
+function toggle() {
+  sidebarCollapsed.value = !sidebarCollapsed.value
+}
+
+function navigate() {
+  sidebarCollapsed.value = true
+}
+</script>
 
 <style scoped>
 .sidebar {

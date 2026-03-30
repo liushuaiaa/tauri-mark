@@ -1,3 +1,19 @@
+<template>
+  <div class="calendar-page">
+    <div class="calendar-container">
+      <Calendar
+        v-model:date="selectedDate"
+        :attributes="attributes"
+        @day-click="onDayClick"
+        :is-expanded="true"
+        :min-date="new Date('2020-01-01')"
+        :max-date="new Date('2099-12-31')"
+        style="width: 100%; min-height: 100%;"
+      />
+    </div>
+  </div>
+</template>
+
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
@@ -29,22 +45,6 @@ function onDayClick(day: { date: Date }) {
   router.push({ path: '/editor', query: { date: dateStr } })
 }
 </script>
-
-<template>
-  <div class="calendar-page">
-    <div class="calendar-container">
-      <Calendar
-        v-model:date="selectedDate"
-        :attributes="attributes"
-        @day-click="onDayClick"
-        :is-expanded="true"
-        :min-date="new Date('2020-01-01')"
-        :max-date="new Date('2099-12-31')"
-        style="width: 100%; min-height: 100%;"
-      />
-    </div>
-  </div>
-</template>
 
 <style scoped>
 .calendar-page {
