@@ -37,7 +37,7 @@ function navigate() {
 <style scoped>
 .sidebar {
   width: 260px;
-  height: 100vh;
+  height: 100%;
   background: var(--color-bg-sidebar);
   border-right: 1px solid var(--color-border);
   display: flex;

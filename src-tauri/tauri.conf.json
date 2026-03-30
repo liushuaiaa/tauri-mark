@@ -15,7 +15,9 @@
         "title": "备忘录",
         "width": 800,
         "height": 600,
-        "devtools": true
+        "devtools": true,
+        "decorations": false,
+        "transparent": false
       }
     ],
     "security": {

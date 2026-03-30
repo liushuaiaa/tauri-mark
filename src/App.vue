@@ -1,5 +1,6 @@
 <template>
-  <div class="app-root">
+  <div class="app-root" :class="{ 'cursor-hidden': cursorEnabled }">
+    <TitleBar />
     <el-container class="app-layout">
       <AppSidebar v-if="showSidebar" />
       <div
@@ -8,18 +9,24 @@
         @click="sidebarCollapsed = true"
       />
       <el-main>
-        <router-view />
+        <router-view v-slot="{ Component }">
+          <Transition name="fade-slide" mode="out-in">
+            <component :is="Component" />
+          </Transition>
+        </router-view>
       </el-main>
     </el-container>
   </div>
-  <div ref="cursorRef" class="custom-cursor" />
-  <canvas ref="canvasRef" class="star-canvas" />
+  <div ref="cursorRef" class="custom-cursor" :class="{ 'cursor-hidden': !cursorEnabled }" />
+  <canvas ref="canvasRef" class="star-canvas" :class="{ 'cursor-hidden': !cursorEnabled }" />
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import AppSidebar from './components/AppSidebar.vue'
+import TitleBar from './components/TitleBar.vue'
 import { sidebarCollapsed } from './stores/sidebar'
+import { cursorEnabled } from './stores/cursor'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
@@ -29,6 +36,7 @@ const canvasRef = ref<HTMLCanvasElement | null>(null)
 const cursorRef = ref<HTMLDivElement | null>(null)
 let ctx: CanvasRenderingContext2D | null = null
 let animFrame = 0
+
 const stars: {
   x: number
   y: number
@@ -47,6 +55,7 @@ let mouseMoveTimeout: number | null = null
 let trailHue = 120 // start with green
 
 function onMouseMove(e: MouseEvent) {
+  if (!cursorEnabled.value) return
   mouseX = e.clientX
   mouseY = e.clientY
   if (cursorRef.value) {
@@ -87,6 +96,11 @@ function drawStars(timestamp: number) {
   }
   const canvas = canvasRef.value
   ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+  if (!cursorEnabled.value) {
+    animFrame = requestAnimationFrame(drawStars)
+    return
+  }
 
   // Periodic leaf particles at mouse position while hovering
   if (mouseX >= 0 && timestamp - lastStarTime > 80 && isMouseMoving) {
@@ -204,20 +218,28 @@ body,
   font-family: 'Microsoft YaHei', Arial, sans-serif;
   background-color: var(--color-bg-page);
 }
-* {
+.cursor-hidden * {
   cursor: none !important;
 }
 .app-root {
-  height: 100%;
+  height: 100vh;
   position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.app-layout {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
 }
 .el-main {
+  flex: 1;
   padding: 0;
   overflow-y: auto;
 }
 .overlay {
-  position: absolute;
-  top: 0;
+  position: fixed;
+  top: 40px;
   left: 260px;
   right: 0;
   bottom: 0;
@@ -232,6 +254,10 @@ body,
   height: 100vh;
   pointer-events: none !important;
   z-index: 2147483647;
+}
+.star-canvas.cursor-hidden,
+.custom-cursor.cursor-hidden {
+  display: none;
 }
 .custom-cursor {
   position: fixed;
@@ -263,5 +289,19 @@ body,
 .el-link--primary {
   --el-link-text-color: #FF6700;
   --el-link-hover-text-color: #FF8533;
+}
+
+/* Page Transition */
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: translateX(20px);
+}
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateX(-20px);
 }
 </style>
