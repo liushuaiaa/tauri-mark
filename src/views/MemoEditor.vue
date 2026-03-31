@@ -44,6 +44,7 @@ const id = ref('')
 const title = ref('')
 const content = ref('')
 const saving = ref(false)
+const createdAt = ref(0) // 保存原始创建时间
 const editorRef = ref<InstanceType<typeof QuillEditor> | null>(null)
 
 const editorOptions = reactive({
@@ -107,12 +108,14 @@ onMounted(async () => {
     if (memo) {
       title.value = memo.title
       content.value = memo.content
+      createdAt.value = memo.created_at
     } else {
       await store.fetchMemos()
       const fresh = store.memos.find(m => m.id === memoId)
       if (fresh) {
         title.value = fresh.title
         content.value = fresh.content
+        createdAt.value = fresh.created_at
       }
     }
   } else if (dateParam) {
@@ -188,12 +191,16 @@ async function handleSave() {
   saving.value = true
   try {
     const now = Date.now()
+    const isNew = !id.value
     const memo: Memo = {
       id: id.value || crypto.randomUUID(),
       title: title.value.trim(),
       content: content.value,
-      created_at: id.value ? (store.memos.find(m => m.id === id.value)?.created_at ?? now) : now,
+      created_at: createdAt.value || now,
       updated_at: now
+    }
+    if (isNew) {
+      createdAt.value = memo.created_at
     }
     await store.saveMemo(memo)
     ElMessage.success('保存成功')

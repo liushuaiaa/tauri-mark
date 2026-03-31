@@ -26,9 +26,12 @@
       <ElCard v-for="memo in filteredMemos" :key="memo.id" class="memo-card" shadow="hover">
         <div class="card-content">
           <div class="card-title">{{ memo.title || '无标题' }}</div>
-          <div class="card-preview">{{ stripHtml(memo.content) || '无内容' }}</div>
+          <div class="card-preview" v-if="getPreviewImage(memo.content)">
+            <img :src="getPreviewImage(memo.content)!" class="preview-image" alt="预览" />
+          </div>
+          <div class="card-preview" v-else>{{ stripHtml(memo.content) || '无内容' }}</div>
           <div class="card-footer">
-            <span class="card-date">{{ formatDate(memo.updated_at) }}</span>
+            <span class="card-date">{{ formatDate(memo.created_at) }}</span>
             <div class="card-actions">
               <ElButton :icon="Edit" link @click="router.push(`/editor/${memo.id}`)">编辑</ElButton>
               <ElButton :icon="Delete" link type="danger" @click="handleDelete(memo.id, memo.title)">删除</ElButton>
@@ -69,14 +72,15 @@ const filteredMemos = computed(() => {
     })
   }
 
-  // Filter by date range
+  // Filter by date range (based on created_at)
   if (dateRange.value && dateRange.value[0] && dateRange.value[1]) {
     const start = new Date(dateRange.value[0]).getTime()
     const end = new Date(dateRange.value[1]).getTime() + 86400000 // include end day
-    memos = memos.filter(m => m.updated_at >= start && m.updated_at <= end)
+    memos = memos.filter(m => m.created_at >= start && m.created_at <= end)
   }
 
-  return memos
+  // Sort by created_at descending (newest first)
+  return [...memos].sort((a, b) => b.created_at - a.created_at)
 })
 
 async function handleDelete(id: string, title: string) {
@@ -102,6 +106,13 @@ function stripHtml(html: string): string {
   const div = document.createElement('div')
   div.innerHTML = html
   return div.textContent || div.innerText || ''
+}
+
+function getPreviewImage(html: string): string | null {
+  const div = document.createElement('div')
+  div.innerHTML = html
+  const img = div.querySelector('img')
+  return img?.src || null
 }
 </script>
 
@@ -146,6 +157,12 @@ function stripHtml(html: string): string {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.preview-image {
+  max-width: 100%;
+  max-height: 120px;
+  border-radius: 4px;
+  object-fit: cover;
 }
 .card-footer {
   display: flex;
