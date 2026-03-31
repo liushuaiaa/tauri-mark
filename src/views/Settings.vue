@@ -20,7 +20,7 @@
       <div class="section-title">关于</div>
       <div class="settings-item">
         <span class="item-label">版本</span>
-        <span class="item-value">0.1.0</span>
+        <span class="item-value">0.2.0</span>
       </div>
       <div class="settings-item">
         <span class="item-label">技术栈</span>
