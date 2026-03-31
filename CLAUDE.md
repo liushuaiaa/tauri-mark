@@ -28,6 +28,13 @@ npm run tauri build  # 构建 Tauri 应用发布版
 - UI 组件库为 **Element Plus**，日历组件为 **v-calendar**，富文本编辑为 **@vueup/vue-quill**
 - 自定义光标 (`App.vue`) 使用 Canvas 动画实现跟随鼠标的星星粒子效果
 
+### 样式管理 (src/styles/)
+公共样式集中在 `src/styles/` 目录统一管理：
+- `variables.css` - CSS 变量（颜色、主题等）
+- `global.css` - 全局样式（CSS reset、字体、Element Plus 主题覆盖、页面过渡动画）
+
+组件特有的样式保留在各自 `.vue` 文件的 `<style scoped>` 中。
+
 ### 后端 (src-tauri/)
 - **Rust/Tauri v2** + `serde` JSON 序列化
 - 所有 Tauri 命令在 `src-tauri/src/lib.rs`：

@@ -205,22 +205,6 @@ onUnmounted(() => {
 </script>
 
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-html,
-body,
-#app,
-.app-root {
-  height: 100%;
-  font-family: 'HarmonyOS Sans', 'Microsoft YaHei', Arial, sans-serif;
-  background-color: var(--color-bg-page);
-}
-.cursor-hidden * {
-  cursor: none !important;
-}
 .app-root {
   height: 100vh;
   position: relative;
@@ -273,35 +257,4 @@ body,
   transform: rotate(-45deg);
 }
 
-/* Element Plus Theme Override - Xiaomi Orange */
-.el-button--primary {
-  --el-button-bg-color: #FF6700;
-  --el-button-border-color: #FF6700;
-  --el-button-hover-bg-color: #FF8533;
-  --el-button-hover-border-color: #FF8533;
-  --el-button-active-bg-color: #E65C00;
-  --el-button-active-border-color: #E65C00;
-}
-.el-button--primary.is-link {
-  --el-button-text-color: #FF6700;
-  --el-button-hover-text-color: #FF8533;
-}
-.el-link--primary {
-  --el-link-text-color: #FF6700;
-  --el-link-hover-text-color: #FF8533;
-}
-
-/* Page Transition */
-.fade-slide-enter-active,
-.fade-slide-leave-active {
-  transition: opacity 0.25s ease, transform 0.25s ease;
-}
-.fade-slide-enter-from {
-  opacity: 0;
-  transform: translateX(20px);
-}
-.fade-slide-leave-to {
-  opacity: 0;
-  transform: translateX(-20px);
-}
 </style>
