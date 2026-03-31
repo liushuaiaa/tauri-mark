@@ -215,7 +215,7 @@ body,
 #app,
 .app-root {
   height: 100%;
-  font-family: 'Microsoft YaHei', Arial, sans-serif;
+  font-family: 'HarmonyOS Sans', 'Microsoft YaHei', Arial, sans-serif;
   background-color: var(--color-bg-page);
 }
 .cursor-hidden * {
