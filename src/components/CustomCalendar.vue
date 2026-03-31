@@ -24,12 +24,14 @@
           'has-memo': hasMemo(date),
           'is-other-month': isOtherMonth(date),
           'is-past': isPast(date) && !hasMemo(date),
-          'is-clickable': canClick(date)
+          'is-clickable': canClick(date),
+          'is-sunday': date?.getDay() === 0
         }"
         @click="onDayClick(date)"
       >
         <span v-if="date" class="day-number">{{ date.getDate() }}</span>
-        <el-icon v-if="date && hasMemo(date)" class="memo-icon"><Memo /></el-icon>
+        <el-icon v-if="date && hasMemo(date) && date.getDay() !== 0" class="memo-icon"><Memo /></el-icon>
+        <el-icon v-if="date && hasMemo(date) && date.getDay() === 0" class="memo-icon sunday-icon"><Folder /></el-icon>
       </div>
     </div>
   </div>
@@ -38,7 +40,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { ArrowLeft, ArrowRight, Memo } from '@element-plus/icons-vue'
+import { ArrowLeft, ArrowRight, Memo, Folder } from '@element-plus/icons-vue'
 import { useMemoStore } from '../stores/memo'
 
 const router = useRouter()
@@ -86,11 +88,31 @@ const calendarDays = computed(() => {
 // 检查是否有备忘录
 function hasMemo(date: Date | null): boolean {
   if (!date) return false
+  // 周日的备忘录图标在周日格子上显示本周一到周五的所有备忘录
+  if (date.getDay() === 0) {
+    return hasWeekdayMemos(date)
+  }
   const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
   return store.memos.some(m => {
     const d = new Date(m.created_at)
     const memoDateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
     return memoDateStr === dateStr
+  })
+}
+
+// 检查一周中周一到周五是否有备忘录（用于周日格子显示）
+function hasWeekdayMemos(date: Date | null): boolean {
+  if (!date) return false
+  // 找到这周的周一和周日
+  const day = date.getDay()
+  const monday = new Date(date)
+  monday.setDate(date.getDate() - (day === 0 ? 6 : day - 1))
+  const sunday = new Date(monday)
+  sunday.setDate(monday.getDate() + 6)
+
+  return store.memos.some(m => {
+    const d = new Date(m.created_at)
+    return d >= monday && d <= sunday && d.getDay() >= 1 && d.getDay() <= 5
   })
 }
 
@@ -118,6 +140,8 @@ function isPast(date: Date | null): boolean {
 
 function canClick(date: Date | null): boolean {
   if (!date) return false
+  // 周日只有当本周一到周五存在备忘录时才可点击
+  if (date.getDay() === 0) return hasWeekdayMemos(date)
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   const checkDate = new Date(date)
@@ -139,8 +163,12 @@ function onDayClick(date: Date | null) {
 
   const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 
-  // 跳转到日期备忘录页面
-  router.push({ path: '/day', query: { date: dateStr } })
+  // 周日跳转到周汇总页面，其他日期跳转到日期备忘录页面
+  if (date.getDay() === 0) {
+    router.push({ path: '/week', query: { date: dateStr } })
+  } else {
+    router.push({ path: '/day', query: { date: dateStr } })
+  }
 }
 </script>
 
@@ -260,5 +288,26 @@ function onDayClick(date: Date | null) {
   top: 4px;
   right: 4px;
   color: var(--color-primary);
+}
+
+.sunday-icon {
+  color: #9c27b0;
+}
+
+.calendar-day.is-sunday.has-memo {
+  background: rgba(156, 39, 176, 0.1);
+}
+
+.calendar-day.is-sunday.has-memo.is-clickable {
+  cursor: pointer;
+}
+
+.calendar-day.is-sunday.has-memo.is-clickable:hover {
+  background: rgba(156, 39, 176, 0.2);
+}
+
+.calendar-day.is-sunday.has-memo .day-number {
+  color: #9c27b0;
+  font-weight: 600;
 }
 </style>

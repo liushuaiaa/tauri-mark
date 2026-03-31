@@ -25,16 +25,20 @@
     <div v-else class="card-list">
       <ElCard v-for="memo in filteredMemos" :key="memo.id" class="memo-card" shadow="hover">
         <div class="card-content">
-          <div class="card-title">{{ memo.title || '无标题' }}</div>
+          <div class="card-title">
+            {{ memo.title || '无标题' }}
+            <el-icon v-if="memo.encrypted" class="encrypted-icon"><Lock /></el-icon>
+          </div>
           <div class="card-preview" v-if="getPreviewImage(memo.content)">
             <img :src="getPreviewImage(memo.content)!" class="preview-image" alt="预览" />
+            <span v-if="stripHtml(memo.content)" class="preview-text">{{ stripHtml(memo.content) }}</span>
           </div>
           <div class="card-preview" v-else>{{ stripHtml(memo.content) || '无内容' }}</div>
           <div class="card-footer">
             <span class="card-date">{{ formatDate(memo.created_at) }}</span>
             <div class="card-actions">
               <ElButton :icon="Edit" link @click="router.push(`/editor/${memo.id}`)">编辑</ElButton>
-              <ElButton :icon="Delete" link type="danger" @click="handleDelete(memo.id, memo.title)">删除</ElButton>
+              <ElButton :icon="Delete" link type="danger" @click="handleTrash(memo.id, memo.title)">删除</ElButton>
             </div>
           </div>
         </div>
@@ -46,8 +50,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useMemoStore } from '../stores/memo'
-import { ElButton, ElCard, ElDatePicker, ElEmpty, ElInput, ElMessage, ElMessageBox } from 'element-plus'
-import { Delete, Edit, Plus, Search } from '@element-plus/icons-vue'
+import { ElButton, ElCard, ElDatePicker, ElEmpty, ElIcon, ElInput, ElMessage, ElMessageBox } from 'element-plus'
+import { Delete, Edit, Lock, Plus, Search } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 
 const store = useMemoStore()
@@ -80,18 +84,18 @@ const filteredMemos = computed(() => {
   }
 
   // Sort by created_at descending (newest first)
-  return [...memos].sort((a, b) => b.created_at - a.created_at)
+  return [...memos].sort((a, b) => b.created_at - a.updated_at)
 })
 
-async function handleDelete(id: string, title: string) {
+async function handleTrash(id: string, title: string) {
   try {
-    await ElMessageBox.confirm(`确定要删除备忘录「${title}」吗？`, '删除确认', {
+    await ElMessageBox.confirm(`确定要将备忘录「${title}」移入回收站吗？`, '删除确认', {
       confirmButtonText: '删除',
       cancelButtonText: '取消',
       type: 'warning'
     })
-    await store.deleteMemo(id)
-    ElMessage.success('删除成功')
+    await store.trashMemo(id)
+    ElMessage.success('已移入回收站')
   } catch {
     // user cancelled
   }
@@ -149,7 +153,15 @@ function getPreviewImage(html: string): string | null {
   font-weight: 600;
   margin-bottom: 8px;
   color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
+
+.encrypted-icon {
+  color: var(--color-primary);
+}
+
 .card-preview {
   font-size: 14px;
   color: var(--color-text-secondary);
@@ -163,6 +175,16 @@ function getPreviewImage(html: string): string | null {
   max-height: 120px;
   border-radius: 4px;
   object-fit: cover;
+  display: block;
+  margin-bottom: 8px;
+}
+.preview-text {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-text-secondary);
+  font-size: 14px;
 }
 .card-footer {
   display: flex;

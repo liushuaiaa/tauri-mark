@@ -15,7 +15,7 @@
       ></div>
     </div>
 
-    <ElEmpty v-else description="这天没有备忘录" />
+    <ElEmpty v-else :description="dateStr && new Date(dateStr).getDay() === 0 ? '本周暂无工作日备忘录' : '这天没有备忘录'" />
   </div>
 </template>
 
@@ -35,12 +35,36 @@ const dateStr = computed(() => route.query.date as string)
 const formattedDate = computed(() => {
   if (!dateStr.value) return ''
   const d = new Date(dateStr.value)
+  if (d.getDay() === 0) {
+    // 周日显示本周日期范围
+    const monday = new Date(d)
+    monday.setDate(d.getDate() - 6)
+    return `${monday.getMonth() + 1}月${monday.getDate()}日 - ${d.getMonth() + 1}月${d.getDate()}日 本周汇总`
+  }
   return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`
 })
 
 const dayMemos = computed(() => {
   if (!dateStr.value) return []
   const [year, month, day] = dateStr.value.split('-').map(Number)
+  const selectedDate = new Date(year, month - 1, day)
+
+  // 如果是周日，返回本周一到周五的所有备忘录
+  if (selectedDate.getDay() === 0) {
+    const monday = new Date(selectedDate)
+    monday.setDate(selectedDate.getDate() - 6)
+    monday.setHours(0, 0, 0, 0)
+    const sundayEnd = new Date(selectedDate)
+    sundayEnd.setHours(23, 59, 59, 999)
+
+    return store.memos.filter((m) => {
+      const d = new Date(m.created_at)
+      const dayOfWeek = d.getDay()
+      return d >= monday && d <= sundayEnd && dayOfWeek >= 1 && dayOfWeek <= 5
+    }).sort((a, b) => a.created_at - b.created_at) // 按时间正序排列
+  }
+
+  // 否则返回当天的备忘录
   return store.memos.filter((m) => {
     const d = new Date(m.created_at)
     return (

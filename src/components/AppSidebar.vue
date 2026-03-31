@@ -13,6 +13,15 @@
         <el-icon><Calendar /></el-icon>
         <span v-if="!sidebarCollapsed">日历</span>
       </router-link>
+      <router-link to="/trash" class="nav-item" :class="{ 'icon-only': sidebarCollapsed }" @click="navigate">
+        <el-icon><Delete /></el-icon>
+        <span v-if="!sidebarCollapsed">回收站</span>
+        <ElBadge v-if="!sidebarCollapsed && trashCount > 0" :value="trashCount" class="trash-badge" />
+      </router-link>
+      <router-link v-if="!sidebarCollapsed" to="/settings" class="nav-item" @click="navigate">
+        <el-icon><Setting /></el-icon>
+        <span>设置</span>
+      </router-link>
     </nav>
 
     <div class="sidebar-footer">
@@ -22,8 +31,19 @@
 </template>
 
 <script setup lang="ts">
-import { Burger, Calendar, Memo } from '@element-plus/icons-vue'
+import { computed, onMounted } from 'vue'
+import { Burger, Calendar, Delete, Memo, Setting } from '@element-plus/icons-vue'
+import { ElBadge, ElButton } from 'element-plus'
 import { sidebarCollapsed } from '../stores/sidebar'
+import { useTrashStore } from '../stores/trash'
+
+const trashStore = useTrashStore()
+
+const trashCount = computed(() => trashStore.trashedMemos.length)
+
+onMounted(() => {
+  trashStore.fetchTrashed()
+})
 
 function toggle() {
   sidebarCollapsed.value = !sidebarCollapsed.value
@@ -68,6 +88,7 @@ function navigate() {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  overflow-y: auto;
 }
 .nav-item {
   display: flex;
@@ -92,6 +113,9 @@ function navigate() {
 .nav-item.router-link-active {
   background: var(--color-secondary-light);
   color: var(--color-primary);
+}
+.trash-badge {
+  margin-left: auto;
 }
 .sidebar-footer {
   padding: 12px 8px;

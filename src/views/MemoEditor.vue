@@ -4,6 +4,10 @@
       <ElButton :icon="ArrowLeft" @click="router.back()">返回</ElButton>
       <div class="header-right">
         <ElButton @click="handleImport">导入</ElButton>
+        <ElButton @click="showPasswordDialog = true">
+          <el-icon v-if="password"><Lock /></el-icon>
+          {{ password ? '已加密' : '设置密码' }}
+        </ElButton>
         <ElButton type="primary" :loading="saving" @click="handleSave">保存</ElButton>
       </div>
     </div>
@@ -32,6 +36,22 @@
       :content="importedContent"
       @confirm="confirmImport"
     />
+
+    <!-- 密码设置弹窗 -->
+    <CommonDialog v-model="showPasswordDialog" title="设置密码" width="400px">
+      <ElForm>
+        <ElFormItem label="密码">
+          <ElInput v-model="tempPassword" type="password" placeholder="请输入密码，留空则清除密码" show-password />
+        </ElFormItem>
+        <ElFormItem label="密码提示（可选）">
+          <ElInput v-model="tempPasswordHint" placeholder="输入提示信息" />
+        </ElFormItem>
+      </ElForm>
+      <template #footer>
+        <ElButton @click="showPasswordDialog = false">取消</ElButton>
+        <ElButton type="primary" @click="confirmPassword">确认</ElButton>
+      </template>
+    </CommonDialog>
   </div>
 </template>
 
@@ -40,12 +60,13 @@ import { onMounted, ref, reactive, nextTick } from 'vue'
 import { listen } from '@tauri-apps/api/event'
 import { invoke } from '@tauri-apps/api/core'
 import { useMemoStore, type Memo } from '../stores/memo'
-import { ElButton, ElFormItem, ElInput, ElMessage } from 'element-plus'
-import { ArrowLeft } from '@element-plus/icons-vue'
+import { ElButton, ElForm, ElFormItem, ElInput, ElMessage, ElIcon } from 'element-plus'
+import { ArrowLeft, Lock } from '@element-plus/icons-vue'
 import { useRoute, useRouter } from 'vue-router'
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import ImportDialog from './ImportDialog.vue'
+import CommonDialog from '../components/CommonDialog.vue'
 
 const store = useMemoStore()
 const route = useRoute()
@@ -54,11 +75,16 @@ const router = useRouter()
 const id = ref('')
 const title = ref('')
 const content = ref('')
+const password = ref('')
+const passwordHint = ref('')
 const saving = ref(false)
 const createdAt = ref(0) // 保存原始创建时间
 const editorRef = ref<InstanceType<typeof QuillEditor> | null>(null)
 const showImportDialog = ref(false)
 const importedContent = ref('')
+const showPasswordDialog = ref(false)
+const tempPassword = ref('')
+const tempPasswordHint = ref('')
 
 const editorOptions = reactive({
   theme: 'snow',
@@ -139,6 +165,13 @@ function confirmImport() {
   ElMessage.success('导入成功')
 }
 
+function confirmPassword() {
+  password.value = tempPassword.value
+  passwordHint.value = tempPasswordHint.value
+  showPasswordDialog.value = false
+  ElMessage.success(password.value ? '密码已设置' : '密码已清除')
+}
+
 onMounted(async () => {
   const memoId = route.params.id as string
   const dateParam = route.query.date as string
@@ -149,6 +182,8 @@ onMounted(async () => {
     if (memo) {
       title.value = memo.title
       content.value = memo.content
+      password.value = memo.password_hint || ''
+      passwordHint.value = memo.password_hint || ''
       createdAt.value = memo.created_at
     } else {
       await store.fetchMemos()
@@ -156,6 +191,8 @@ onMounted(async () => {
       if (fresh) {
         title.value = fresh.title
         content.value = fresh.content
+        password.value = fresh.password_hint || ''
+        passwordHint.value = fresh.password_hint || ''
         createdAt.value = fresh.created_at
       }
     }
@@ -238,7 +275,10 @@ async function handleSave() {
       title: title.value.trim(),
       content: content.value,
       created_at: createdAt.value || now,
-      updated_at: now
+      updated_at: now,
+      deleted_at: null,
+      encrypted: !!password.value,
+      password_hint: password.value || null
     }
     if (isNew) {
       createdAt.value = memo.created_at

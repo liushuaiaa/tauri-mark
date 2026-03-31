@@ -8,6 +8,9 @@ export interface Memo {
   content: string
   created_at: number
   updated_at: number
+  deleted_at: number | null
+  encrypted: boolean
+  password_hint: string | null
 }
 
 export const useMemoStore = defineStore('memo', () => {
@@ -18,6 +21,8 @@ export const useMemoStore = defineStore('memo', () => {
     loading.value = true
     try {
       memos.value = await invoke<Memo[]>('get_memos')
+      // Filter out trashed memos and sort by updated_at descending
+      memos.value = memos.value.filter(m => !m.deleted_at)
       memos.value.sort((a, b) => b.updated_at - a.updated_at)
     } finally {
       loading.value = false
@@ -29,6 +34,13 @@ export const useMemoStore = defineStore('memo', () => {
     await fetchMemos()
   }
 
+  // Soft delete - move to trash
+  async function trashMemo(id: string) {
+    await invoke('trash_memo', { id })
+    await fetchMemos()
+  }
+
+  // Legacy delete - now calls trashMemo for backward compatibility
   async function deleteMemo(id: string) {
     await invoke('delete_memo', { id })
     await fetchMemos()
@@ -43,5 +55,5 @@ export const useMemoStore = defineStore('memo', () => {
     })
   }
 
-  return { memos, loading, fetchMemos, saveMemo, deleteMemo, getMemosByDate }
+  return { memos, loading, fetchMemos, saveMemo, trashMemo, deleteMemo, getMemosByDate }
 })
