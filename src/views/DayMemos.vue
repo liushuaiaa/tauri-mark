@@ -3,7 +3,7 @@
     <div class="header">
       <ElButton :icon="ArrowLeft" @click="router.back()">返回</ElButton>
       <span class="date-title">{{ formattedDate }}</span>
-      <div style="width: 60px;"></div>
+      <div style="width: 60px"></div>
     </div>
 
     <div class="memos-container" v-if="dayMemos.length > 0">
@@ -41,17 +41,15 @@ const formattedDate = computed(() => {
 const dayMemos = computed(() => {
   if (!dateStr.value) return []
   const [year, month, day] = dateStr.value.split('-').map(Number)
-  return store.memos.filter(m => {
+  return store.memos.filter((m) => {
     const d = new Date(m.created_at)
-    return d.getFullYear() === year &&
+    return (
+      d.getFullYear() === year &&
       d.getMonth() + 1 === month &&
       d.getDate() === day
+    )
   })
 })
-
-function createMemo() {
-  router.push({ path: '/editor', query: { date: dateStr.value } })
-}
 </script>
 
 <style scoped>
