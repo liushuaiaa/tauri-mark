@@ -20,7 +20,7 @@
       <div class="section-title">关于</div>
       <div class="settings-item">
         <span class="item-label">版本</span>
-        <span class="item-value">0.2.0</span>
+        <span class="item-value">{{ appVersion || '-' }}</span>
       </div>
       <div class="settings-item">
         <span class="item-label">技术栈</span>
@@ -31,12 +31,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { getVersion } from '@tauri-apps/api/app'
 import { ElButton, ElInputNumber, ElMessage } from 'element-plus'
 import { useTrashStore } from '../stores/trash'
 
 const trashStore = useTrashStore()
 const cleanupDays = ref(7)
+const appVersion = ref('')
+
+onMounted(async () => {
+  appVersion.value = await getVersion()
+})
 
 async function handleCleanup() {
   await trashStore.cleanupTrash(cleanupDays.value)
