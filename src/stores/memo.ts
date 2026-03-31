@@ -11,6 +11,8 @@ export interface Memo {
   deleted_at: number | null
   encrypted: boolean
   password_hint: string | null
+  weather_icon: string | null
+  weather_temp: number | null
 }
 
 export const useMemoStore = defineStore('memo', () => {

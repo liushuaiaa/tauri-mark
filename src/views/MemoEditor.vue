@@ -60,6 +60,7 @@ import { onMounted, ref, reactive, nextTick } from 'vue'
 import { listen } from '@tauri-apps/api/event'
 import { invoke } from '@tauri-apps/api/core'
 import { useMemoStore, type Memo } from '../stores/memo'
+import { useWeatherStore } from '../stores/weather'
 import { ElButton, ElForm, ElFormItem, ElInput, ElMessage, ElIcon } from 'element-plus'
 import { ArrowLeft, Lock } from '@element-plus/icons-vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -69,6 +70,7 @@ import ImportDialog from './ImportDialog.vue'
 import CommonDialog from '../components/CommonDialog.vue'
 
 const store = useMemoStore()
+const weatherStore = useWeatherStore()
 const route = useRoute()
 const router = useRouter()
 
@@ -78,6 +80,8 @@ const content = ref('')
 const password = ref('')
 const passwordHint = ref('')
 const saving = ref(false)
+const originalWeatherIcon = ref<string | null>(null)
+const originalWeatherTemp = ref<number | null>(null)
 const createdAt = ref(0) // 保存原始创建时间
 const editorRef = ref<InstanceType<typeof QuillEditor> | null>(null)
 const showImportDialog = ref(false)
@@ -185,6 +189,8 @@ onMounted(async () => {
       password.value = memo.password_hint || ''
       passwordHint.value = memo.password_hint || ''
       createdAt.value = memo.created_at
+      originalWeatherIcon.value = memo.weather_icon
+      originalWeatherTemp.value = memo.weather_temp
     } else {
       await store.fetchMemos()
       const fresh = store.memos.find(m => m.id === memoId)
@@ -194,6 +200,8 @@ onMounted(async () => {
         password.value = fresh.password_hint || ''
         passwordHint.value = fresh.password_hint || ''
         createdAt.value = fresh.created_at
+        originalWeatherIcon.value = fresh.weather_icon
+        originalWeatherTemp.value = fresh.weather_temp
       }
     }
   } else if (dateParam) {
@@ -270,6 +278,8 @@ async function handleSave() {
   try {
     const now = Date.now()
     const isNew = !id.value
+    // 新建时获取当前天气，编辑时保留原天气
+    const weather = isNew ? weatherStore.weather : null
     const memo: Memo = {
       id: id.value || crypto.randomUUID(),
       title: title.value.trim(),
@@ -278,7 +288,9 @@ async function handleSave() {
       updated_at: now,
       deleted_at: null,
       encrypted: !!password.value,
-      password_hint: password.value || null
+      password_hint: password.value || null,
+      weather_icon: isNew ? (weather?.icon || null) : originalWeatherIcon.value,
+      weather_temp: isNew ? (weather?.temperature || null) : originalWeatherTemp.value
     }
     if (isNew) {
       createdAt.value = memo.created_at

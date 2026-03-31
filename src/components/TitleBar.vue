@@ -1,7 +1,17 @@
 <template>
   <div class="title-bar">
     <div class="title-bar-title" @mousedown="startDrag">
-      <span class="title-text">备忘录</span>
+      <div class="title-left">
+        <span class="title-text">备忘录</span>
+        <span v-if="loading" class="weather-loading">
+          <el-icon class="loading-icon"><Loading /></el-icon>
+        </span>
+        <span v-else-if="weather" class="weather-info">
+          <span class="weather-icon">{{ weather.icon }}</span>
+          <span class="weather-temp">{{ weather.temperature }}°C</span>
+          <span class="weather-location">{{ weather.location }}</span>
+        </span>
+      </div>
       <el-switch v-model="cursorEnabled" size="small" @mousedown.stop @click.stop />
     </div>
     <div class="title-bar-controls">
@@ -25,10 +35,20 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { cursorEnabled } from '../stores/cursor'
+import { useWeatherStore } from '../stores/weather'
+import { storeToRefs } from 'pinia'
+import { Loading } from '@element-plus/icons-vue'
 
 const appWindow = getCurrentWindow()
+const weatherStore = useWeatherStore()
+const { weather, loading } = storeToRefs(weatherStore)
+
+onMounted(() => {
+  weatherStore.fetchWeather()
+})
 
 async function startDrag() {
   await appWindow.startDragging()
@@ -87,8 +107,48 @@ async function handleClose() {
   --el-switch-on-color: var(--color-secondary);
 }
 
+.title-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
 .title-text {
   flex-shrink: 0;
+}
+
+.weather-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.weather-loading {
+  display: flex;
+  align-items: center;
+}
+
+.loading-icon {
+  animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.weather-icon {
+  font-size: 14px;
+}
+
+.weather-temp {
+  font-weight: 500;
+}
+
+.weather-location {
+  opacity: 0.7;
 }
 
 .title-bar-controls {

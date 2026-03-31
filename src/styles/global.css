@@ -27,6 +27,13 @@ body::-webkit-scrollbar,
   cursor: none !important;
 }
 
+input,
+textarea,
+[contenteditable="true"],
+.ql-editor {
+  caret-color: var(--color-text-primary);
+}
+
 /* Element Plus Theme Override - Xiaomi Orange */
 .el-button--primary {
   --el-button-bg-color: #FF6700;

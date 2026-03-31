@@ -13,6 +13,8 @@ pub struct Memo {
     pub deleted_at: Option<i64>,
     pub encrypted: bool,
     pub password_hint: Option<String>,
+    pub weather_icon: Option<String>,
+    pub weather_temp: Option<i32>,
 }
 
 fn get_app_dir(app_handle: &tauri::AppHandle) -> PathBuf {

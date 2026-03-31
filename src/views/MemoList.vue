@@ -28,6 +28,9 @@
           <div class="card-title">
             {{ memo.title || '无标题' }}
             <el-icon v-if="memo.encrypted" class="encrypted-icon"><Lock /></el-icon>
+            <span v-if="memo.weather_icon" class="weather-badge">
+              {{ memo.weather_icon }} {{ memo.weather_temp }}°C
+            </span>
           </div>
           <div class="card-preview" v-if="getPreviewImage(memo.content)">
             <img :src="getPreviewImage(memo.content)!" class="preview-image" alt="预览" />
@@ -160,6 +163,16 @@ function getPreviewImage(html: string): string | null {
 
 .encrypted-icon {
   color: var(--color-primary);
+}
+
+.weather-badge {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-page);
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: auto;
 }
 
 .card-preview {
