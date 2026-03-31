@@ -186,6 +186,13 @@ function onMouseEnter() {
   isMouseMoving = true
 }
 
+function onContextMenu(e: MouseEvent) {
+  // 生产环境禁用右键
+  if (import.meta.env.PROD) {
+    e.preventDefault()
+  }
+}
+
 onMounted(() => {
   if (!canvasRef.value) return
   ctx = canvasRef.value.getContext('2d')
@@ -193,6 +200,7 @@ onMounted(() => {
   window.addEventListener('resize', resizeCanvas)
   document.addEventListener('mousemove', onMouseMove)
   document.addEventListener('mouseenter', onMouseEnter)
+  document.addEventListener('contextmenu', onContextMenu)
   animFrame = requestAnimationFrame(drawStars)
 })
 
@@ -200,6 +208,7 @@ onUnmounted(() => {
   window.removeEventListener('resize', resizeCanvas)
   document.removeEventListener('mousemove', onMouseMove)
   document.removeEventListener('mouseenter', onMouseEnter)
+  document.removeEventListener('contextmenu', onContextMenu)
   cancelAnimationFrame(animFrame)
 })
 </script>
