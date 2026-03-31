@@ -30,7 +30,7 @@ import { cursorEnabled } from './stores/cursor'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
-const showSidebar = computed(() => route.name !== 'editor')
+const showSidebar = computed(() => route.name !== 'editor' && route.name !== 'day')
 
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 const cursorRef = ref<HTMLDivElement | null>(null)

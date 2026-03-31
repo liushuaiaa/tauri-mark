@@ -2,7 +2,10 @@
   <div class="memo-editor">
     <div class="header">
       <ElButton :icon="ArrowLeft" @click="router.back()">返回</ElButton>
-      <ElButton type="primary" :loading="saving" @click="handleSave">保存</ElButton>
+      <div class="header-right">
+        <ElButton @click="handleImport">导入</ElButton>
+        <ElButton type="primary" :loading="saving" @click="handleSave">保存</ElButton>
+      </div>
     </div>
 
     <div class="form">
@@ -22,6 +25,13 @@
         </div>
       </ElFormItem>
     </div>
+
+    <!-- 导入弹窗 -->
+    <ImportDialog
+      v-model="showImportDialog"
+      :content="importedContent"
+      @confirm="confirmImport"
+    />
   </div>
 </template>
 
@@ -35,6 +45,7 @@ import { ArrowLeft } from '@element-plus/icons-vue'
 import { useRoute, useRouter } from 'vue-router'
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
+import ImportDialog from './ImportDialog.vue'
 
 const store = useMemoStore()
 const route = useRoute()
@@ -46,6 +57,8 @@ const content = ref('')
 const saving = ref(false)
 const createdAt = ref(0) // 保存原始创建时间
 const editorRef = ref<InstanceType<typeof QuillEditor> | null>(null)
+const showImportDialog = ref(false)
+const importedContent = ref('')
 
 const editorOptions = reactive({
   theme: 'snow',
@@ -96,6 +109,34 @@ function insertImageByBase64(base64DataUrl: string) {
     quill.insertEmbed(range.index, 'image', base64DataUrl)
     quill.setSelection(range.index + 1)
   }
+}
+
+function handleImport() {
+  const input = document.createElement('input')
+  input.type = 'file'
+  input.accept = '.txt,.md,text/plain,text/markdown'
+  input.onchange = async () => {
+    const file = input.files?.[0]
+    if (!file) return
+
+    try {
+      const text = await file.text()
+      // 简单处理：将换行转换为 <br>，多行转换为段落
+      const paragraphs = text.split(/\n\n+/).filter(p => p.trim())
+      const htmlContent = paragraphs.map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('')
+      importedContent.value = htmlContent || `<p>${text.replace(/\n/g, '<br>')}</p>`
+      showImportDialog.value = true
+    } catch (e) {
+      ElMessage.error('读取文件失败')
+    }
+  }
+  input.click()
+}
+
+function confirmImport() {
+  content.value = importedContent.value
+  showImportDialog.value = false
+  ElMessage.success('导入成功')
 }
 
 onMounted(async () => {
@@ -222,7 +263,20 @@ async function handleSave() {
 .header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
+}
+.header-right {
+  display: flex;
+  gap: 8px;
+}
+
+:deep(.el-dialog) {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
 }
 .form {
   display: flex;

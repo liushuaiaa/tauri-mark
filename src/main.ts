@@ -6,9 +6,11 @@ import './styles/variables.css'
 import './styles/global.css'
 import router from './router'
 import App from './App.vue'
+import CommonDialog from './components/CommonDialog.vue'
 
 const app = createApp(App)
 app.use(createPinia())
 app.use(router)
 app.use(ElementPlus)
+app.component('CommonDialog', CommonDialog)
 app.mount('#app')

@@ -73,12 +73,17 @@ fn read_file_as_base64(path: String) -> Result<String, String> {
     Ok(base64::engine::general_purpose::STANDARD.encode(&data))
 }
 
+#[tauri::command]
+fn read_text_file(path: String) -> Result<String, String> {
+    fs::read_to_string(&path).map_err(|e| e.to_string())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_fs::init())
-        .invoke_handler(tauri::generate_handler![get_memos, save_memo, delete_memo, read_file_as_base64])
+        .invoke_handler(tauri::generate_handler![get_memos, save_memo, delete_memo, read_file_as_base64, read_text_file])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
