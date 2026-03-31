@@ -12,10 +12,11 @@
       <ElFormItem label="内容">
         <div class="editor-wrapper">
           <QuillEditor
+            ref="editorRef"
             v-model:content="content"
             content-type="html"
             theme="snow"
-            toolbar="essential"
+            :options="editorOptions"
             placeholder="请输入内容"
           />
         </div>
@@ -25,7 +26,9 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, reactive, nextTick } from 'vue'
+import { listen } from '@tauri-apps/api/event'
+import { invoke } from '@tauri-apps/api/core'
 import { useMemoStore, type Memo } from '../stores/memo'
 import { ElButton, ElFormItem, ElInput, ElMessage } from 'element-plus'
 import { ArrowLeft } from '@element-plus/icons-vue'
@@ -41,6 +44,58 @@ const id = ref('')
 const title = ref('')
 const content = ref('')
 const saving = ref(false)
+const editorRef = ref<InstanceType<typeof QuillEditor> | null>(null)
+
+const editorOptions = reactive({
+  theme: 'snow',
+  modules: {
+    toolbar: {
+      container: [
+        ['bold', 'italic', 'underline', 'strike'],
+        ['blockquote', 'code-block'],
+        [{ 'header': 1 }, { 'header': 2 }],
+        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+        [{ 'color': [] }, { 'background': [] }],
+        [{ 'align': [] }],
+        ['clean'],
+        ['image']
+      ],
+      handlers: {
+        image: imageHandler
+      }
+    }
+  }
+})
+
+function imageHandler() {
+  const input = document.createElement('input')
+  input.type = 'file'
+  input.accept = 'image/*'
+  input.onchange = () => {
+    const file = input.files?.[0]
+    if (!file) return
+    insertImage(file)
+  }
+  input.click()
+}
+
+function insertImage(file: File) {
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    const base64 = e.target?.result as string
+    insertImageByBase64(base64)
+  }
+  reader.readAsDataURL(file)
+}
+
+function insertImageByBase64(base64DataUrl: string) {
+  const quill = editorRef.value?.getQuill()
+  if (quill) {
+    const range = quill.getSelection(true)
+    quill.insertEmbed(range.index, 'image', base64DataUrl)
+    quill.setSelection(range.index + 1)
+  }
+}
 
 onMounted(async () => {
   const memoId = route.params.id as string
@@ -63,7 +118,67 @@ onMounted(async () => {
   } else if (dateParam) {
     title.value = `${dateParam} 备忘录`
   }
+
+  // 等待 Quill 初始化完成后设置拖拽
+  await nextTick()
+  await nextTick() // 双重等待确保 DOM 完全渲染
+  setupDragAndDrop()
 })
+
+async function setupDragAndDrop() {
+  console.log('Setting up Tauri drag and drop handlers')
+
+  const qlEditor = document.querySelector('.ql-editor')
+  if (!qlEditor) return
+
+  // 监听 Tauri 的拖拽事件
+  await listen('tauri://drag-enter', () => {
+    console.log('Tauri drag-enter')
+    qlEditor.classList.add('drag-over')
+  })
+
+  await listen('tauri://drag-over', () => {
+    console.log('Tauri drag-over')
+    qlEditor.classList.add('drag-over')
+  })
+
+  await listen('tauri://drag-leave', () => {
+    console.log('Tauri drag-leave')
+    qlEditor.classList.remove('drag-over')
+  })
+
+  await listen('tauri://drag-drop', async (event) => {
+    console.log('Tauri drag-drop')
+    qlEditor.classList.remove('drag-over')
+
+    // 在 Tauri 中，拖拽的文件信息在 payload 中
+    const payload = event.payload as { paths?: string[] }
+    if (payload.paths && payload.paths.length > 0) {
+      console.log('File paths:', payload.paths)
+      for (const path of payload.paths) {
+        // 使用 Tauri 命令读取文件并转为 base64
+        try {
+          const base64 = await invoke<string>('read_file_as_base64', { path })
+          // 根据文件扩展名判断 MIME 类型
+          const ext = path.split('.').pop()?.toLowerCase() || ''
+          const mimeTypes: Record<string, string> = {
+            jpg: 'image/jpeg',
+            jpeg: 'image/jpeg',
+            png: 'image/png',
+            gif: 'image/gif',
+            webp: 'image/webp',
+            bmp: 'image/bmp'
+          }
+          const mimeType = mimeTypes[ext] || 'image/png'
+          const dataUrl = `data:${mimeType};base64,${base64}`
+          insertImageByBase64(dataUrl)
+        } catch (e) {
+          console.error('Failed to load file:', e)
+        }
+      }
+    }
+  })
+}
 
 async function handleSave() {
   if (!title.value.trim() && !content.value.trim()) {
@@ -123,11 +238,18 @@ async function handleSave() {
   border: none;
   min-height: 400px;
   font-size: 16px;
-  font-family: 'Microsoft YaHei', Arial, sans-serif;
+  font-family: 'HarmonyOS Sans', 'Microsoft YaHei', Arial, sans-serif;
 }
 :deep(.ql-editor) {
   min-height: 400px;
-  font-family: 'Microsoft YaHei', Arial, sans-serif;
+  font-family: 'HarmonyOS Sans', 'Microsoft YaHei', Arial, sans-serif;
+}
+:deep(.ql-editor img) {
+  max-width: 100%;
+  height: auto;
+}
+:deep(.ql-editor.drag-over) {
+  background-color: var(--color-secondary-light);
 }
 :deep(.ql-editor.ql-blank::before) {
   font-style: normal;

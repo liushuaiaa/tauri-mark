@@ -66,11 +66,19 @@ fn delete_memo(app_handle: tauri::AppHandle, id: String) -> Result<(), String> {
     Ok(())
 }
 
+#[tauri::command]
+fn read_file_as_base64(path: String) -> Result<String, String> {
+    let data = fs::read(&path).map_err(|e| e.to_string())?;
+    use base64::Engine;
+    Ok(base64::engine::general_purpose::STANDARD.encode(&data))
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![get_memos, save_memo, delete_memo])
+        .plugin(tauri_plugin_fs::init())
+        .invoke_handler(tauri::generate_handler![get_memos, save_memo, delete_memo, read_file_as_base64])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
