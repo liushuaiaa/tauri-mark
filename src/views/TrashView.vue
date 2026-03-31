@@ -26,7 +26,7 @@
           </div>
           <div class="trash-actions">
             <ElButton :icon="Refresh" link @click="handleRestore(memo.id)">恢复</ElButton>
-            <ElButton :icon="Delete" link type="danger" @click="handlePermanentDelete(memo.id, memo.title)">永久删除</ElButton>
+            <ElButton :icon="Delete" link type="danger" @click="handlePermanentDelete(memo.id, memo.title)">删除</ElButton>
           </div>
         </div>
       </ElCard>
@@ -53,13 +53,13 @@ async function handleRestore(id: string) {
 
 async function handlePermanentDelete(id: string, title: string) {
   try {
-    await ElMessageBox.confirm(`确定要永久删除「${title || '无标题'}」吗？此操作不可恢复！`, '永久删除确认', {
-      confirmButtonText: '永久删除',
+    await ElMessageBox.confirm(`确定要删除「${title || '无标题'}」吗？此操作不可恢复！`, '删除确认', {
+      confirmButtonText: '删除',
       cancelButtonText: '取消',
       type: 'warning'
     })
     await store.permanentDelete(id)
-    ElMessage.success('已永久删除')
+    ElMessage.success('已删除')
   } catch {
     // user cancelled
   }
