@@ -19,9 +19,6 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        System.out.println("Register request: " + request);
-        System.out.println("Username: " + request.getUsername());
-        System.out.println("Password: " + request.getPassword());
         try {
             AuthResponse response = authService.register(request);
             return ResponseEntity.ok(ApiResponse.success(response));

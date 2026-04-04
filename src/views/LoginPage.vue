@@ -30,15 +30,31 @@
         @submit.prevent="handleSubmit"
       >
         <el-form-item prop="username">
-          <el-input
-            v-model="form.username"
-            placeholder="请输入用户名"
-            size="large"
-          >
-            <template #prefix>
-              <el-icon><User /></el-icon>
-            </template>
-          </el-input>
+          <div class="username-input-wrapper">
+            <el-input
+              v-model="form.username"
+              placeholder="请输入用户名"
+              size="large"
+              clearable
+              @focus="showDropdown = !isRegister && savedAccounts.length > 0"
+              @input="showDropdown = !isRegister && filteredAccounts.length > 0"
+            >
+              <template #prefix>
+                <el-icon><User /></el-icon>
+              </template>
+            </el-input>
+            <div v-show="showDropdown && !isRegister" class="account-dropdown">
+              <div
+                v-for="account in filteredAccounts"
+                :key="account.username"
+                class="account-item"
+                @click="handleSelectAccount(account)"
+              >
+                <span>{{ account.username }}</span>
+                <el-icon @click.stop="deleteAccountByUsername(account.username)"><Delete /></el-icon>
+              </div>
+            </div>
+          </div>
         </el-form-item>
 
         <el-form-item prop="password">
@@ -100,12 +116,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { Lock, User } from '@element-plus/icons-vue'
+import { Delete, Lock, User } from '@element-plus/icons-vue'
 import CryptoJS from 'crypto-js'
 import { checkAuthSetup, login, logout, register } from '../stores/auth'
+import { sidebarCollapsed } from '../stores/sidebar'
+
+interface SavedAccount {
+  username: string
+  password: string
+}
 
 const router = useRouter()
 
@@ -113,9 +135,9 @@ const formRef = ref()
 const loading = ref(false)
 const isRegister = ref(false)
 const rememberPwd = ref(false)
+const showDropdown = ref(false)
 
-const REMEMBER_USERNAME_KEY = 'remember_username'
-const REMEMBER_PASSWORD_KEY = 'remember_password'
+const SAVED_ACCOUNTS_KEY = 'saved_accounts'
 
 const form = ref({
   username: '',
@@ -123,7 +145,16 @@ const form = ref({
   confirmPassword: ''
 })
 
-const validateConfirmPassword = (rule: any, value: string, callback: any) => {
+const savedAccounts = ref<SavedAccount[]>([])
+
+const filteredAccounts = computed(() => {
+  if (!form.value.username) return savedAccounts.value
+  return savedAccounts.value.filter(a =>
+    a.username.toLowerCase().includes(form.value.username.toLowerCase())
+  )
+})
+
+const validateConfirmPassword = (_rule: any, value: string, callback: any) => {
   if (isRegister.value && value !== form.value.password) {
     callback(new Error('两次输入的密码不一致'))
   } else {
@@ -149,15 +180,45 @@ const rules = computed(() => ({
 onMounted(async () => {
   logout()
   isRegister.value = !(await checkAuthSetup())
-  // Load saved credentials
-  const savedUsername = localStorage.getItem(REMEMBER_USERNAME_KEY)
-  const savedPassword = localStorage.getItem(REMEMBER_PASSWORD_KEY)
-  if (savedUsername && savedPassword) {
-    form.value.username = savedUsername
-    form.value.password = savedPassword
-    rememberPwd.value = true
-  }
+  loadSavedAccounts()
+  document.addEventListener('click', handleClickOutside)
 })
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
+
+function handleClickOutside(e: MouseEvent) {
+  const target = e.target as HTMLElement
+  if (!target.closest('.username-input-wrapper')) {
+    showDropdown.value = false
+  }
+}
+
+function loadSavedAccounts() {
+  try {
+    const stored = localStorage.getItem(SAVED_ACCOUNTS_KEY)
+    if (stored) {
+      savedAccounts.value = JSON.parse(stored)
+    }
+  } catch {
+    savedAccounts.value = []
+  }
+}
+
+function handleSelectAccount(account: SavedAccount) {
+  form.value.username = account.username
+  form.value.password = account.password
+  showDropdown.value = false
+  // Clear validation error for username
+  formRef.value?.clearValidate('username')
+}
+
+function deleteAccountByUsername(username: string) {
+  savedAccounts.value = savedAccounts.value.filter(a => a.username !== username)
+  localStorage.setItem(SAVED_ACCOUNTS_KEY, JSON.stringify(savedAccounts.value))
+  ElMessage.success('已删除')
+}
 
 function switchMode() {
   isRegister.value = !isRegister.value
@@ -187,18 +248,22 @@ async function handleSubmit() {
       }
       await register(form.value.username, encryptedPassword)
       ElMessage.success('注册成功')
+      sidebarCollapsed.value = true
       router.push('/')
     } else {
       await login(form.value.username, encryptedPassword)
       ElMessage.success('登录成功')
-      // Remember credentials: save original password
+      // Remember credentials: save to accounts list
       if (rememberPwd.value) {
-        localStorage.setItem(REMEMBER_USERNAME_KEY, form.value.username)
-        localStorage.setItem(REMEMBER_PASSWORD_KEY, form.value.password)
-      } else {
-        localStorage.removeItem(REMEMBER_USERNAME_KEY)
-        localStorage.removeItem(REMEMBER_PASSWORD_KEY)
+        const existingIndex = savedAccounts.value.findIndex(a => a.username === form.value.username)
+        if (existingIndex >= 0) {
+          savedAccounts.value[existingIndex].password = form.value.password
+        } else {
+          savedAccounts.value.push({ username: form.value.username, password: form.value.password })
+        }
+        localStorage.setItem(SAVED_ACCOUNTS_KEY, JSON.stringify(savedAccounts.value))
       }
+      sidebarCollapsed.value = true
       router.push('/')
     }
   } catch {
@@ -305,14 +370,74 @@ async function handleSubmit() {
   border-color: var(--color-primary);
 }
 
+.username-input-wrapper {
+  position: relative;
+  width: 100%;
+  display: block;
+}
+
+.username-input-wrapper :deep(.el-input) {
+  width: 100%;
+}
+
+.account-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  z-index: 100;
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 4px;
+}
+
 .login-form :deep(.el-input__inner) {
   font-size: 15px;
   height: 40px;
+  width: 100%;
 }
 
 .login-form :deep(.el-input__prefix .el-icon) {
   color: var(--color-text-secondary);
   font-size: 16px;
+}
+
+.account-dropdown {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.account-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 8px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.account-item:hover {
+  background: var(--color-secondary-light);
+}
+
+.account-item .el-icon {
+  cursor: pointer;
+  color: var(--color-text-secondary);
+}
+
+.account-item .el-icon:hover {
+  color: var(--color-danger);
+}
+
+.no-accounts {
+  text-align: center;
+  color: var(--color-text-secondary);
+  padding: 20px 0;
+  font-size: 14px;
 }
 
 .submit-btn {

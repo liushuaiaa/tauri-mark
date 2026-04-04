@@ -56,7 +56,7 @@ const router = createRouter({
 })
 
 // Navigation guard
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
   const requiresAuth = to.name !== 'login'
 
   if (requiresAuth && !isLoggedIn.value) {

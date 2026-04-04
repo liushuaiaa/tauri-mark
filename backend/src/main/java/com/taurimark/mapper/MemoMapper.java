@@ -10,6 +10,32 @@ public interface MemoMapper {
     @Select("SELECT * FROM memo WHERE user_id = #{userId} AND deleted_at IS NULL ORDER BY updated_at DESC")
     List<Memo> findByUserId(@Param("userId") Long userId);
 
+    @Select("<script>" +
+            "SELECT * FROM memo WHERE user_id = #{userId} AND deleted_at IS NULL " +
+            "<if test='keyword != null and keyword != \"\"'> AND (title LIKE CONCAT('%', #{keyword}, '%') OR content LIKE CONCAT('%', #{keyword}, '%')) </if>" +
+            "<if test='startDate != null'> AND created_at &gt;= #{startDate} </if>" +
+            "<if test='endDate != null'> AND created_at &lt;= #{endDate} </if>" +
+            "ORDER BY updated_at DESC " +
+            "LIMIT #{offset}, #{limit}" +
+            "</script>")
+    List<Memo> findByUserIdWithPage(@Param("userId") Long userId,
+                                    @Param("keyword") String keyword,
+                                    @Param("startDate") Long startDate,
+                                    @Param("endDate") Long endDate,
+                                    @Param("offset") int offset,
+                                    @Param("limit") int limit);
+
+    @Select("<script>" +
+            "SELECT COUNT(*) FROM memo WHERE user_id = #{userId} AND deleted_at IS NULL " +
+            "<if test='keyword != null and keyword != \"\"'> AND (title LIKE CONCAT('%', #{keyword}, '%') OR content LIKE CONCAT('%', #{keyword}, '%')) </if>" +
+            "<if test='startDate != null'> AND created_at &gt;= #{startDate} </if>" +
+            "<if test='endDate != null'> AND created_at &lt;= #{endDate} </if>" +
+            "</script>")
+    int countByUserId(@Param("userId") Long userId,
+                      @Param("keyword") String keyword,
+                      @Param("startDate") Long startDate,
+                      @Param("endDate") Long endDate);
+
     @Select("SELECT * FROM memo WHERE id = #{id} AND user_id = #{userId}")
     Memo findByIdAndUserId(@Param("id") String id, @Param("userId") Long userId);
 

@@ -281,7 +281,7 @@ async function handleSave() {
     // 新建时获取当前天气，编辑时保留原天气
     const weather = isNew ? weatherStore.weather : null
     const memo: Memo = {
-      id: id.value || crypto.randomUUID(),
+      id: id.value || '',
       title: title.value.trim(),
       content: content.value,
       created_at: createdAt.value || now,
@@ -295,7 +295,7 @@ async function handleSave() {
     if (isNew) {
       createdAt.value = memo.created_at
     }
-    await store.saveMemo(memo)
+    await store.saveMemo(memo, isNew)
     ElMessage.success('保存成功')
     router.push('/')
   } catch (e) {

@@ -19,6 +19,15 @@ public class MemoService {
         return memoMapper.findByUserId(userId);
     }
 
+    public List<Memo> getMemos(Long userId, String keyword, Long startDate, Long endDate, int page, int pageSize) {
+        int offset = (page - 1) * pageSize;
+        return memoMapper.findByUserIdWithPage(userId, keyword, startDate, endDate, offset, pageSize);
+    }
+
+    public int countMemos(Long userId, String keyword, Long startDate, Long endDate) {
+        return memoMapper.countByUserId(userId, keyword, startDate, endDate);
+    }
+
     public Memo getMemo(String id, Long userId) {
         return memoMapper.findByIdAndUserId(id, userId);
     }

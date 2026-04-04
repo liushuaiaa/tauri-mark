@@ -7,6 +7,7 @@
         :prefix-icon="Search"
         clearable
         style="width: 200px"
+        @input="handleSearch"
       />
       <ElDatePicker
         v-model="dateRange"
@@ -15,15 +16,16 @@
         start-placeholder="开始日期"
         end-placeholder="结束日期"
         style="width: 260px"
+        @change="handleSearch"
       />
       <ElButton type="primary" :icon="Plus" @click="router.push('/editor')">新建</ElButton>
     </div>
 
     <ElEmpty v-if="!store.loading && store.memos.length === 0" description="暂无记事本，点击新建开始" />
-    <ElEmpty v-else-if="filteredMemos.length === 0" description="未找到匹配的记事本" />
+    <ElEmpty v-else-if="store.memos.length === 0" description="未找到匹配的记事本" />
 
     <div v-else class="card-list" ref="listRef">
-      <ElCard v-for="memo in displayedMemos" :key="memo.id" class="memo-card" shadow="hover">
+      <ElCard v-for="memo in store.memos" :key="memo.id" class="memo-card" shadow="hover">
         <div class="card-content">
           <div class="card-title">
             {{ memo.title || '无标题' }}
@@ -46,11 +48,11 @@
           </div>
         </div>
       </ElCard>
-      <div v-if="loadingMore" class="loading-more">
+      <div v-if="store.loading" class="loading-more">
         <el-icon class="loading-icon"><Loading /></el-icon>
         <span>加载中...</span>
       </div>
-      <div v-else-if="!hasMore && displayedMemos.length > 0" class="no-more">
+      <div v-else-if="!hasMore && store.memos.length > 0" class="no-more">
         没有更多了
       </div>
     </div>
@@ -58,25 +60,20 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useMemoStore } from '../stores/memo'
 import { ElButton, ElCard, ElDatePicker, ElEmpty, ElIcon, ElInput, ElMessage, ElMessageBox } from 'element-plus'
 import { Delete, Edit, Loading, Lock, Plus, Search } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 
-const PAGE_SIZE = 10
-
 const store = useMemoStore()
 const router = useRouter()
 const searchQuery = ref('')
 const dateRange = ref<[Date, Date] | null>(null)
-const displayedCount = ref(PAGE_SIZE)
-const loadingMore = ref(false)
 const listRef = ref<HTMLElement | null>(null)
 
 onMounted(() => {
   store.fetchMemos()
-  // 监听 el-main 的滚动事件
   const elMain = document.querySelector('.el-main')
   if (elMain) {
     elMain.addEventListener('scroll', handleScroll)
@@ -90,58 +87,12 @@ onUnmounted(() => {
   }
 })
 
-// 重置显示数量当筛选条件变化时
-watch([searchQuery, dateRange], () => {
-  displayedCount.value = PAGE_SIZE
-})
-
-const filteredMemos = computed(() => {
-  let memos = store.memos
-
-  // Filter by text search
-  if (searchQuery.value.trim()) {
-    const query = searchQuery.value.toLowerCase()
-    memos = memos.filter(m => {
-      const titleMatch = m.title.toLowerCase().includes(query)
-      const contentMatch = stripHtml(m.content).toLowerCase().includes(query)
-      return titleMatch || contentMatch
-    })
-  }
-
-  // Filter by date range (based on created_at)
-  if (dateRange.value && dateRange.value[0] && dateRange.value[1]) {
-    const start = new Date(dateRange.value[0]).getTime()
-    const end = new Date(dateRange.value[1]).getTime() + 86400000 // include end day
-    memos = memos.filter(m => m.created_at >= start && m.created_at <= end)
-  }
-
-  // Sort by created_at descending (newest first)
-  return [...memos].sort((a, b) => b.created_at - b.updated_at)
-})
-
-const displayedMemos = computed(() => {
-  return filteredMemos.value.slice(0, displayedCount.value)
-})
-
-const hasMore = computed(() => {
-  return displayedCount.value < filteredMemos.value.length
-})
-
-function handleScroll() {
-  if (loadingMore.value || !hasMore.value) return
-
-  const elMain = document.querySelector('.el-main') as HTMLElement
-  if (!elMain) return
-
-  const { scrollTop, scrollHeight, clientHeight } = elMain
-  // 滚动到底部附近（距离底部 50px 时触发加载）
-  if (scrollTop + clientHeight >= scrollHeight - 50) {
-    loadingMore.value = true
-    setTimeout(() => {
-      displayedCount.value += PAGE_SIZE
-      loadingMore.value = false
-    }, 300)
-  }
+function handleSearch() {
+  store.fetchMemos({
+    keyword: searchQuery.value || undefined,
+    startDate: dateRange.value?.[0]?.getTime(),
+    endDate: dateRange.value?.[1] ? dateRange.value[1].getTime() + 86400000 : undefined
+  })
 }
 
 async function handleTrash(id: string, title: string) {
@@ -174,6 +125,26 @@ function getPreviewImage(html: string): string | null {
   div.innerHTML = html
   const img = div.querySelector('img')
   return img?.src || null
+}
+
+const hasMore = computed(() => {
+  return store.memos.length < store.total
+})
+
+function handleScroll() {
+  if (store.loading || !hasMore.value) return
+
+  const elMain = document.querySelector('.el-main') as HTMLElement
+  if (!elMain) return
+
+  const { scrollTop, scrollHeight, clientHeight } = elMain
+  if (scrollTop + clientHeight >= scrollHeight - 50) {
+    store.loadMoreMemos({
+      keyword: searchQuery.value || undefined,
+      startDate: dateRange.value?.[0]?.getTime(),
+      endDate: dateRange.value?.[1] ? dateRange.value[1].getTime() + 86400000 : undefined
+    })
+  }
 }
 </script>
 

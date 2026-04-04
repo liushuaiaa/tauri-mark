@@ -8,7 +8,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/memos")
@@ -26,9 +28,21 @@ public class MemoController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<Memo>>> getMemos() {
-        List<Memo> memos = memoService.getMemos(getCurrentUserId());
-        return ResponseEntity.ok(ApiResponse.success(memos));
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getMemos(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Long startDate,
+            @RequestParam(required = false) Long endDate,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int pageSize) {
+        Long userId = getCurrentUserId();
+        List<Memo> memos = memoService.getMemos(userId, keyword, startDate, endDate, page, pageSize);
+        int total = memoService.countMemos(userId, keyword, startDate, endDate);
+        Map<String, Object> result = new HashMap<>();
+        result.put("list", memos);
+        result.put("total", total);
+        result.put("page", page);
+        result.put("pageSize", pageSize);
+        return ResponseEntity.ok(ApiResponse.success(result));
     }
 
     @GetMapping("/{id}")

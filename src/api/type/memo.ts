@@ -10,9 +10,3 @@ export interface Memo {
   weather_icon: string | null
   weather_temp: number | null
 }
-
-export interface ApiResponse<T> {
-  code: number
-  message: string
-  data: T
-}
