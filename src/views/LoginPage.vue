@@ -71,6 +71,12 @@
           </el-input>
         </el-form-item>
 
+        <el-form-item v-if="!isRegister">
+          <div class="remember-row">
+            <el-checkbox v-model="rememberPwd">记住账号密码</el-checkbox>
+          </div>
+        </el-form-item>
+
         <el-button
           type="primary"
           size="large"
@@ -98,6 +104,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Lock, User } from '@element-plus/icons-vue'
+import CryptoJS from 'crypto-js'
 import { checkAuthSetup, login, logout, register } from '../stores/auth'
 
 const router = useRouter()
@@ -105,6 +112,10 @@ const router = useRouter()
 const formRef = ref()
 const loading = ref(false)
 const isRegister = ref(false)
+const rememberPwd = ref(false)
+
+const REMEMBER_USERNAME_KEY = 'remember_username'
+const REMEMBER_PASSWORD_KEY = 'remember_password'
 
 const form = ref({
   username: '',
@@ -138,6 +149,14 @@ const rules = computed(() => ({
 onMounted(async () => {
   logout()
   isRegister.value = !(await checkAuthSetup())
+  // Load saved credentials
+  const savedUsername = localStorage.getItem(REMEMBER_USERNAME_KEY)
+  const savedPassword = localStorage.getItem(REMEMBER_PASSWORD_KEY)
+  if (savedUsername && savedPassword) {
+    form.value.username = savedUsername
+    form.value.password = savedPassword
+    rememberPwd.value = true
+  }
 })
 
 function switchMode() {
@@ -159,15 +178,27 @@ async function handleSubmit() {
   loading.value = true
 
   try {
+    // Always encrypt password with SHA-256 before sending to backend
+    const encryptedPassword = CryptoJS.SHA256(form.value.password).toString()
+
     if (isRegister.value) {
       if (form.value.password !== form.value.confirmPassword) {
         return
       }
-      await register(form.value.username, form.value.password)
+      await register(form.value.username, encryptedPassword)
       ElMessage.success('注册成功')
       router.push('/')
     } else {
-      await login(form.value.username, form.value.password)
+      await login(form.value.username, encryptedPassword)
+      ElMessage.success('登录成功')
+      // Remember credentials: save original password
+      if (rememberPwd.value) {
+        localStorage.setItem(REMEMBER_USERNAME_KEY, form.value.username)
+        localStorage.setItem(REMEMBER_PASSWORD_KEY, form.value.password)
+      } else {
+        localStorage.removeItem(REMEMBER_USERNAME_KEY)
+        localStorage.removeItem(REMEMBER_PASSWORD_KEY)
+      }
       router.push('/')
     }
   } catch {
@@ -312,5 +343,10 @@ async function handleSubmit() {
   margin-top: 20px;
   font-size: 14px;
   color: var(--color-text-secondary);
+}
+
+.remember-row {
+  display: flex;
+  align-items: center;
 }
 </style>

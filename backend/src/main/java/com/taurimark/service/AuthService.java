@@ -6,19 +6,16 @@ import com.taurimark.dto.LoginRequest;
 import com.taurimark.dto.RegisterRequest;
 import com.taurimark.entity.User;
 import com.taurimark.mapper.UserMapper;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
 
     private final UserMapper userMapper;
-    private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    public AuthService(UserMapper userMapper, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
+    public AuthService(UserMapper userMapper, JwtUtil jwtUtil) {
         this.userMapper = userMapper;
-        this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
     }
 
@@ -29,10 +26,10 @@ public class AuthService {
             throw new RuntimeException("用户名已存在");
         }
 
-        // Create new user
+        // Create new user (password is already SHA-256 hashed by frontend)
         User user = new User();
         user.setUsername(request.getUsername());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setPassword(request.getPassword());
 
         userMapper.insert(user);
 
@@ -47,7 +44,8 @@ public class AuthService {
             throw new RuntimeException("用户不存在");
         }
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        // Password is already SHA-256 hashed by frontend, compare directly
+        if (!request.getPassword().equals(user.getPassword())) {
             throw new RuntimeException("密码错误");
         }
 

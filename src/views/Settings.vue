@@ -3,19 +3,6 @@
     <h1 class="page-title">设置</h1>
 
     <div class="settings-section">
-      <div class="section-title">账号管理</div>
-      <div class="settings-item">
-        <div class="item-info">
-          <span class="item-label">退出登录</span>
-          <span class="item-desc">返回登录页面</span>
-        </div>
-        <div class="item-action">
-          <ElButton type="danger" @click="handleLogout">退出</ElButton>
-        </div>
-      </div>
-    </div>
-
-    <div class="settings-section">
       <div class="section-title">数据管理</div>
       <div class="settings-item">
         <div class="item-info">
@@ -45,13 +32,10 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import { getVersion } from '@tauri-apps/api/app'
 import { ElButton, ElInputNumber, ElMessage } from 'element-plus'
 import { useTrashStore } from '../stores/trash'
-import { logout } from '../stores/auth'
 
-const router = useRouter()
 const trashStore = useTrashStore()
 const cleanupDays = ref(7)
 const appVersion = ref('')
@@ -59,11 +43,6 @@ const appVersion = ref('')
 onMounted(async () => {
   appVersion.value = await getVersion()
 })
-
-function handleLogout() {
-  logout()
-  router.push('/login')
-}
 
 async function handleCleanup() {
   await trashStore.cleanupTrash(cleanupDays.value)

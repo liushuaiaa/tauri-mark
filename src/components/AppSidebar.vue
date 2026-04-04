@@ -1,7 +1,8 @@
 <template>
   <aside class="sidebar" :class="{ collapsed: sidebarCollapsed }">
     <div class="sidebar-header" v-if="!sidebarCollapsed">
-      <span class="logo-text">记事本</span>
+      <span class="logo-text">{{ currentTitle }}</span>
+      <el-button :icon="SwitchButton" text @click="handleLogout" class="logout-btn" title="退出登录" />
     </div>
 
     <nav class="nav">
@@ -32,15 +33,27 @@
 
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
-import { Burger, Calendar, Delete, Memo, Setting } from '@element-plus/icons-vue'
-import { ElBadge, ElButton } from 'element-plus'
+import { useRouter, useRoute } from 'vue-router'
+import { Burger, Calendar, Delete, Memo, Setting, SwitchButton } from '@element-plus/icons-vue'
+import { ElBadge, ElButton, ElMessage, ElMessageBox } from 'element-plus'
 import { sidebarCollapsed } from '../stores/sidebar'
 import { useTrashStore } from '../stores/trash'
-import { isLoggedIn } from '../stores/auth'
+import { isLoggedIn, logout } from '../stores/auth'
 
+const router = useRouter()
+const route = useRoute()
 const trashStore = useTrashStore()
 
 const trashCount = computed(() => trashStore.trashedMemos.length)
+
+const routeTitleMap: Record<string, string> = {
+  '/': '记事本',
+  '/calendar': '日历',
+  '/trash': '回收站',
+  '/settings': '设置'
+}
+
+const currentTitle = computed(() => routeTitleMap[route.path] || '记事本')
 
 onMounted(() => {
   if (isLoggedIn.value) {
@@ -54,6 +67,21 @@ function toggle() {
 
 function navigate() {
   sidebarCollapsed.value = true
+}
+
+async function handleLogout() {
+  try {
+    await ElMessageBox.confirm('确定要退出登录吗？', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+    logout()
+    ElMessage.success('已退出登录')
+    router.push('/login')
+  } catch {
+    // User cancelled
+  }
 }
 </script>
 
@@ -75,6 +103,7 @@ function navigate() {
 .sidebar-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 16px;
   border-bottom: 1px solid var(--color-border-light);
   min-height: 60px;
@@ -84,6 +113,13 @@ function navigate() {
   font-weight: 600;
   color: var(--color-primary);
   white-space: nowrap;
+}
+.logout-btn {
+  font-size: 16px;
+  color: var(--color-text-secondary);
+}
+.logout-btn:hover {
+  color: var(--color-primary);
 }
 .nav {
   flex: 1;
