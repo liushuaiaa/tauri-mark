@@ -22,8 +22,8 @@
     <ElEmpty v-if="!store.loading && store.memos.length === 0" description="暂无记事本，点击新建开始" />
     <ElEmpty v-else-if="filteredMemos.length === 0" description="未找到匹配的记事本" />
 
-    <div v-else class="card-list">
-      <ElCard v-for="memo in filteredMemos" :key="memo.id" class="memo-card" shadow="hover">
+    <div v-else class="card-list" ref="listRef">
+      <ElCard v-for="memo in displayedMemos" :key="memo.id" class="memo-card" shadow="hover">
         <div class="card-content">
           <div class="card-title">
             {{ memo.title || '无标题' }}
@@ -46,24 +46,53 @@
           </div>
         </div>
       </ElCard>
+      <div v-if="loadingMore" class="loading-more">
+        <el-icon class="loading-icon"><Loading /></el-icon>
+        <span>加载中...</span>
+      </div>
+      <div v-else-if="!hasMore && displayedMemos.length > 0" class="no-more">
+        没有更多了
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useMemoStore } from '../stores/memo'
 import { ElButton, ElCard, ElDatePicker, ElEmpty, ElIcon, ElInput, ElMessage, ElMessageBox } from 'element-plus'
-import { Delete, Edit, Lock, Plus, Search } from '@element-plus/icons-vue'
+import { Delete, Edit, Loading, Lock, Plus, Search } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
+
+const PAGE_SIZE = 10
 
 const store = useMemoStore()
 const router = useRouter()
 const searchQuery = ref('')
 const dateRange = ref<[Date, Date] | null>(null)
+const displayedCount = ref(PAGE_SIZE)
+const loadingMore = ref(false)
+const listRef = ref<HTMLElement | null>(null)
 
 onMounted(() => {
   store.fetchMemos()
+  // 监听 el-main 的滚动事件
+  const elMain = document.querySelector('.el-main')
+  if (elMain) {
+    elMain.addEventListener('scroll', handleScroll)
+  }
+})
+
+onUnmounted(() => {
+  const elMain = document.querySelector('.el-main')
+  if (elMain) {
+    elMain.removeEventListener('scroll', handleScroll)
+  }
+})
+
+// 重置显示数量当筛选条件变化时
+watch([searchQuery, dateRange], () => {
+  displayedCount.value = PAGE_SIZE
 })
 
 const filteredMemos = computed(() => {
@@ -87,8 +116,33 @@ const filteredMemos = computed(() => {
   }
 
   // Sort by created_at descending (newest first)
-  return [...memos].sort((a, b) => b.created_at - a.updated_at)
+  return [...memos].sort((a, b) => b.created_at - b.updated_at)
 })
+
+const displayedMemos = computed(() => {
+  return filteredMemos.value.slice(0, displayedCount.value)
+})
+
+const hasMore = computed(() => {
+  return displayedCount.value < filteredMemos.value.length
+})
+
+function handleScroll() {
+  if (loadingMore.value || !hasMore.value) return
+
+  const elMain = document.querySelector('.el-main') as HTMLElement
+  if (!elMain) return
+
+  const { scrollTop, scrollHeight, clientHeight } = elMain
+  // 滚动到底部附近（距离底部 50px 时触发加载）
+  if (scrollTop + clientHeight >= scrollHeight - 50) {
+    loadingMore.value = true
+    setTimeout(() => {
+      displayedCount.value += PAGE_SIZE
+      loadingMore.value = false
+    }, 300)
+  }
+}
 
 async function handleTrash(id: string, title: string) {
   try {
@@ -211,5 +265,27 @@ function getPreviewImage(html: string): string | null {
 .card-actions {
   display: flex;
   gap: 8px;
+}
+.loading-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+}
+.loading-more .loading-icon {
+  animation: rotate 1s linear infinite;
+}
+.no-more {
+  text-align: center;
+  padding: 16px;
+  color: var(--color-text-disabled);
+  font-size: 14px;
+}
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 </style>
