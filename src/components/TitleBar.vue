@@ -3,29 +3,29 @@
     <div class="title-bar-title" @mousedown="startDrag">
       <div class="title-left">
         <span class="title-text">记事本</span>
-        <span v-if="loading" class="weather-loading">
+        <span v-if="showWeather && loading" class="weather-loading">
           <el-icon class="loading-icon"><Loading /></el-icon>
         </span>
-        <span v-else-if="weather" class="weather-info">
+        <span v-else-if="showWeather && weather" class="weather-info">
           <span class="weather-icon">{{ weather.icon }}</span>
           <span class="weather-temp">{{ weather.temperature }}°C</span>
           <span class="weather-location">{{ weather.location }}</span>
         </span>
       </div>
-      <el-switch v-model="cursorEnabled" size="small" @mousedown.stop @click.stop />
+      <el-switch v-if="showCursorSwitch" v-model="cursorEnabled" size="small" @mousedown.stop @click.stop />
     </div>
     <div class="title-bar-controls">
-      <button class="control-btn minimize" @click="handleMinimize" title="最小化">
+      <button v-if="showMinimize" class="control-btn minimize" @click="handleMinimize" title="最小化">
         <svg width="12" height="12" viewBox="0 0 12 12">
           <rect x="2" y="5.5" width="8" height="1" fill="currentColor"/>
         </svg>
       </button>
-      <button class="control-btn maximize" @click="handleMaximize" title="最大化">
+      <button v-if="showMaximize" class="control-btn maximize" @click="handleMaximize" title="最大化">
         <svg width="12" height="12" viewBox="0 0 12 12">
           <rect x="2" y="2" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1"/>
         </svg>
       </button>
-      <button class="control-btn close" @click="handleClose" title="关闭">
+      <button v-if="showClose" class="control-btn close" @click="handleClose" title="关闭">
         <svg width="12" height="12" viewBox="0 0 12 12">
           <path d="M2 2L10 10M10 2L2 10" stroke="currentColor" stroke-width="1.2"/>
         </svg>
@@ -42,12 +42,30 @@ import { useWeatherStore } from '../stores/weather'
 import { storeToRefs } from 'pinia'
 import { Loading } from '@element-plus/icons-vue'
 
+interface Props {
+  showWeather?: boolean
+  showCursorSwitch?: boolean
+  showMinimize?: boolean
+  showMaximize?: boolean
+  showClose?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  showWeather: true,
+  showCursorSwitch: true,
+  showMinimize: true,
+  showMaximize: true,
+  showClose: true
+})
+
 const appWindow = getCurrentWindow()
 const weatherStore = useWeatherStore()
 const { weather, loading } = storeToRefs(weatherStore)
 
 onMounted(() => {
-  weatherStore.fetchWeather()
+  if (props.showWeather) {
+    weatherStore.fetchWeather()
+  }
 })
 
 async function startDrag() {

@@ -17,6 +17,12 @@ pub struct Memo {
     pub weather_temp: Option<i32>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AuthConfig {
+    pub password_hash: String,
+    pub salt: String,
+}
+
 fn get_app_dir(app_handle: &tauri::AppHandle) -> PathBuf {
     let app_dir = app_handle
         .path()
@@ -167,6 +173,60 @@ fn delete_memo(app_handle: tauri::AppHandle, id: String) -> Result<(), String> {
     trash_memo(app_handle, id)
 }
 
+// ============ Auth Commands ============
+
+fn get_auth_file_path(app_handle: &tauri::AppHandle) -> PathBuf {
+    get_app_dir(app_handle).join("auth.json")
+}
+
+#[tauri::command]
+fn get_auth_config(app_handle: tauri::AppHandle) -> Option<AuthConfig> {
+    let path = get_auth_file_path(&app_handle);
+    if !path.exists() {
+        return None;
+    }
+    let data = fs::read_to_string(&path).ok()?;
+    serde_json::from_str(&data).ok()
+}
+
+#[tauri::command]
+fn save_auth_config(app_handle: tauri::AppHandle, password: String) -> Result<(), String> {
+    let path = get_auth_file_path(&app_handle);
+    let salt = generate_salt();
+    let hash = hash_password(&password, &salt);
+    let config = AuthConfig {
+        password_hash: hash,
+        salt,
+    };
+    let json = serde_json::to_string_pretty(&config).map_err(|e| e.to_string())?;
+    fs::write(&path, json).map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+#[tauri::command]
+fn verify_password(app_handle: tauri::AppHandle, password: String) -> bool {
+    let config = match get_auth_config(app_handle) {
+        Some(c) => c,
+        None => return false,
+    };
+    let hash = hash_password(&password, &config.salt);
+    hash == config.password_hash
+}
+
+fn generate_salt() -> String {
+    use std::time::{SystemTime, UNIX_EPOCH};
+    let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos();
+    format!("{:x}", timestamp)
+}
+
+fn hash_password(password: &str, salt: &str) -> String {
+    use std::collections::hash_map::DefaultHasher;
+    use std::hash::{Hash, Hasher};
+    let mut hasher = DefaultHasher::new();
+    format!("{}{}", password, salt).hash(&mut hasher);
+    format!("{:x}", hasher.finish())
+}
+
 // ============ File Commands ============
 
 #[tauri::command]
@@ -208,7 +268,10 @@ pub fn run() {
             cleanup_trash,
             delete_memo,
             read_file_as_base64,
-            read_text_file
+            read_text_file,
+            get_auth_config,
+            save_auth_config,
+            verify_password
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

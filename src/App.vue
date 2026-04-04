@@ -1,6 +1,11 @@
 <template>
   <div class="app-root" :class="{ 'cursor-hidden': cursorEnabled }">
-    <TitleBar />
+    <TitleBar
+      :show-weather="!isLoginPage"
+      :show-cursor-switch="!isLoginPage"
+      :show-minimize="!isLoginPage"
+      :show-maximize="!isLoginPage"
+    />
     <el-container class="app-layout">
       <AppSidebar v-if="showSidebar" />
       <div
@@ -30,7 +35,8 @@ import { cursorEnabled } from './stores/cursor'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
-const showSidebar = computed(() => route.name !== 'editor' && route.name !== 'day')
+const showSidebar = computed(() => route.name !== 'editor' && route.name !== 'day' && route.name !== 'login')
+const isLoginPage = computed(() => route.name === 'login')
 
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 const cursorRef = ref<HTMLDivElement | null>(null)

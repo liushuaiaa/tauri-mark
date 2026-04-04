@@ -6,10 +6,17 @@ import DayMemos from '../views/DayMemos.vue'
 import WeekSummary from '../views/WeekSummary.vue'
 import TrashView from '../views/TrashView.vue'
 import Settings from '../views/Settings.vue'
+import LoginPage from '../views/LoginPage.vue'
+import { isLoggedIn } from '../stores/auth'
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
+    {
+      path: '/login',
+      name: 'login',
+      component: LoginPage
+    },
     {
       path: '/',
       name: 'home',
@@ -46,6 +53,19 @@ const router = createRouter({
       component: Settings
     }
   ]
+})
+
+// Navigation guard
+router.beforeEach((to, from, next) => {
+  const requiresAuth = to.name !== 'login'
+
+  if (requiresAuth && !isLoggedIn.value) {
+    next({ name: 'login' })
+  } else if (to.name === 'login' && isLoggedIn.value) {
+    next({ name: 'home' })
+  } else {
+    next()
+  }
 })
 
 export default router
