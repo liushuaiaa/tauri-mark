@@ -7,7 +7,7 @@
       <div class="settings-item">
         <div class="item-info">
           <span class="item-label">清理回收站</span>
-          <span class="item-desc">删除指定天数前的回收站备忘录</span>
+          <span class="item-desc">删除指定天数前的回收站记事本</span>
         </div>
         <div class="item-action">
           <ElInputNumber v-model="cleanupDays" :min="1" :max="365" />
@@ -46,7 +46,7 @@ onMounted(async () => {
 
 async function handleCleanup() {
   await trashStore.cleanupTrash(cleanupDays.value)
-  ElMessage.success(`已清理 ${cleanupDays.value} 天前的回收站备忘录`)
+  ElMessage.success(`已清理 ${cleanupDays.value} 天前的回收站记事本`)
 }
 </script>
 

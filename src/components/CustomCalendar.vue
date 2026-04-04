@@ -85,10 +85,10 @@ const calendarDays = computed(() => {
   return days
 })
 
-// 检查是否有备忘录
+// 检查是否有记事本
 function hasMemo(date: Date | null): boolean {
   if (!date) return false
-  // 周日的备忘录图标在周日格子上显示本周一到周五的所有备忘录
+  // 周日的记事本图标在周日格子上显示本周一到周五的所有记事本
   if (date.getDay() === 0) {
     return hasWeekdayMemos(date)
   }
@@ -100,7 +100,7 @@ function hasMemo(date: Date | null): boolean {
   })
 }
 
-// 检查一周中周一到周五是否有备忘录（用于周日格子显示）
+// 检查一周中周一到周五是否有记事本（用于周日格子显示）
 function hasWeekdayMemos(date: Date | null): boolean {
   if (!date) return false
   // 找到这周的周一和周日
@@ -140,13 +140,13 @@ function isPast(date: Date | null): boolean {
 
 function canClick(date: Date | null): boolean {
   if (!date) return false
-  // 周日只有当本周一到周五存在备忘录时才可点击
+  // 周日只有当本周一到周五存在记事本时才可点击
   if (date.getDay() === 0) return hasWeekdayMemos(date)
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   const checkDate = new Date(date)
   checkDate.setHours(0, 0, 0, 0)
-  // 未来日期或今天或有备忘录的日期可以点击
+  // 未来日期或今天或有记事本的日期可以点击
   return checkDate >= today || hasMemo(date)
 }
 
@@ -163,7 +163,7 @@ function onDayClick(date: Date | null) {
 
   const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 
-  // 周日跳转到周汇总页面，其他日期跳转到日期备忘录页面
+  // 周日跳转到周汇总页面，其他日期跳转到日期记事本页面
   if (date.getDay() === 0) {
     router.push({ path: '/week', query: { date: dateStr } })
   } else {

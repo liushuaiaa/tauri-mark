@@ -2,7 +2,7 @@
 !include "FileFunc.nsh"
 
 
-!define PRODUCT_NAME "备忘录"
+!define PRODUCT_NAME "记事本"
 !define APP_EXE "tauri-mark.exe"
 !define ICON_FILE "icon.ico"
 !define UNINSTALLER "uninstall.exe"

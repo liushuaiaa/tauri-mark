@@ -15,7 +15,7 @@
       ></div>
     </div>
 
-    <ElEmpty v-else :description="dateStr && new Date(dateStr).getDay() === 0 ? '本周暂无工作日备忘录' : '这天没有备忘录'" />
+    <ElEmpty v-else :description="dateStr && new Date(dateStr).getDay() === 0 ? '本周暂无工作日记事本' : '这天没有记事本'" />
   </div>
 </template>
 
@@ -49,7 +49,7 @@ const dayMemos = computed(() => {
   const [year, month, day] = dateStr.value.split('-').map(Number)
   const selectedDate = new Date(year, month - 1, day)
 
-  // 如果是周日，返回本周一到周五的所有备忘录
+  // 如果是周日，返回本周一到周五的所有记事本
   if (selectedDate.getDay() === 0) {
     const monday = new Date(selectedDate)
     monday.setDate(selectedDate.getDate() - 6)
@@ -64,7 +64,7 @@ const dayMemos = computed(() => {
     }).sort((a, b) => a.created_at - b.created_at) // 按时间正序排列
   }
 
-  // 否则返回当天的备忘录
+  // 否则返回当天的记事本
   return store.memos.filter((m) => {
     const d = new Date(m.created_at)
     return (

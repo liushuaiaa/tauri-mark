@@ -1,13 +1,13 @@
 <template>
   <aside class="sidebar" :class="{ collapsed: sidebarCollapsed }">
     <div class="sidebar-header" v-if="!sidebarCollapsed">
-      <span class="logo-text">备忘录</span>
+      <span class="logo-text">记事本</span>
     </div>
 
     <nav class="nav">
       <router-link to="/" class="nav-item" :class="{ 'icon-only': sidebarCollapsed }" @click="navigate">
         <el-icon><Memo /></el-icon>
-        <span v-if="!sidebarCollapsed">备忘录</span>
+        <span v-if="!sidebarCollapsed">记事本</span>
       </router-link>
       <router-link to="/calendar" class="nav-item" :class="{ 'icon-only': sidebarCollapsed }" @click="navigate">
         <el-icon><Calendar /></el-icon>

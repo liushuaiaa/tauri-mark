@@ -205,7 +205,7 @@ onMounted(async () => {
       }
     }
   } else if (dateParam) {
-    title.value = `${dateParam} 备忘录`
+    title.value = `${dateParam} 记事本`
   }
 
   // 等待 Quill 初始化完成后设置拖拽

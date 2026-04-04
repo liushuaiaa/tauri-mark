@@ -19,8 +19,8 @@
       <ElButton type="primary" :icon="Plus" @click="router.push('/editor')">新建</ElButton>
     </div>
 
-    <ElEmpty v-if="!store.loading && store.memos.length === 0" description="暂无备忘录，点击新建开始" />
-    <ElEmpty v-else-if="filteredMemos.length === 0" description="未找到匹配的备忘录" />
+    <ElEmpty v-if="!store.loading && store.memos.length === 0" description="暂无记事本，点击新建开始" />
+    <ElEmpty v-else-if="filteredMemos.length === 0" description="未找到匹配的记事本" />
 
     <div v-else class="card-list">
       <ElCard v-for="memo in filteredMemos" :key="memo.id" class="memo-card" shadow="hover">
@@ -92,7 +92,7 @@ const filteredMemos = computed(() => {
 
 async function handleTrash(id: string, title: string) {
   try {
-    await ElMessageBox.confirm(`确定要将备忘录「${title}」移入回收站吗？`, '删除确认', {
+    await ElMessageBox.confirm(`确定要将记事本「${title}」移入回收站吗？`, '删除确认', {
       confirmButtonText: '删除',
       cancelButtonText: '取消',
       type: 'warning'

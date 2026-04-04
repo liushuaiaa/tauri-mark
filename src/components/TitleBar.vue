@@ -2,7 +2,7 @@
   <div class="title-bar">
     <div class="title-bar-title" @mousedown="startDrag">
       <div class="title-left">
-        <span class="title-text">备忘录</span>
+        <span class="title-text">记事本</span>
         <span v-if="loading" class="weather-loading">
           <el-icon class="loading-icon"><Loading /></el-icon>
         </span>

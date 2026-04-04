@@ -10,7 +10,7 @@
       <div class="summary-content" v-html="mergedContent"></div>
     </div>
 
-    <ElEmpty v-else description="本周暂无工作日备忘录" />
+    <ElEmpty v-else description="本周暂无工作日记事本" />
   </div>
 </template>
 
@@ -56,7 +56,7 @@ const weekMemos = computed(() => {
     .sort((a, b) => a.created_at - b.created_at)
 })
 
-// 将所有备忘录内容合并，用分隔线隔开
+// 将所有记事本内容合并，用分隔线隔开
 const mergedContent = computed(() => {
   return weekMemos.value
     .map((m) => {
