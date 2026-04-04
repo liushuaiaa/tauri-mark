@@ -1,19 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { invoke } from '@tauri-apps/api/core'
+import { memoApi, type Memo } from '../api/memo'
 
-export interface Memo {
-  id: string
-  title: string
-  content: string
-  created_at: number
-  updated_at: number
-  deleted_at: number | null
-  encrypted: boolean
-  password_hint: string | null
-  weather_icon: string | null
-  weather_temp: number | null
-}
+export { type Memo }
 
 export const useMemoStore = defineStore('memo', () => {
   const memos = ref<Memo[]>([])
@@ -22,29 +11,32 @@ export const useMemoStore = defineStore('memo', () => {
   async function fetchMemos() {
     loading.value = true
     try {
-      memos.value = await invoke<Memo[]>('get_memos')
-      // Filter out trashed memos and sort by updated_at descending
-      memos.value = memos.value.filter(m => !m.deleted_at)
-      memos.value.sort((a, b) => b.updated_at - a.updated_at)
+      const response = await memoApi.getMemos()
+      if (response.code === 200) {
+        memos.value = response.data
+        memos.value.sort((a, b) => b.updated_at - a.updated_at)
+      }
     } finally {
       loading.value = false
     }
   }
 
   async function saveMemo(memo: Memo) {
-    await invoke('save_memo', { memo })
+    if (memo.id) {
+      await memoApi.updateMemo(memo.id, memo)
+    } else {
+      await memoApi.createMemo(memo)
+    }
     await fetchMemos()
   }
 
-  // Soft delete - move to trash
   async function trashMemo(id: string) {
-    await invoke('trash_memo', { id })
+    await memoApi.deleteMemo(id)
     await fetchMemos()
   }
 
-  // Legacy delete - now calls trashMemo for backward compatibility
   async function deleteMemo(id: string) {
-    await invoke('delete_memo', { id })
+    await memoApi.permanentDeleteMemo(id)
     await fetchMemos()
   }
 

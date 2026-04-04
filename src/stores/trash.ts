@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { invoke } from '@tauri-apps/api/core'
-import type { Memo } from './memo'
+import { memoApi, type Memo } from '../api/memo'
+
+export { type Memo }
 
 export const useTrashStore = defineStore('trash', () => {
   const trashedMemos = ref<Memo[]>([])
@@ -10,30 +11,33 @@ export const useTrashStore = defineStore('trash', () => {
   async function fetchTrashed() {
     loading.value = true
     try {
-      trashedMemos.value = await invoke<Memo[]>('get_trashed_memos')
-      trashedMemos.value.sort((a, b) => (b.deleted_at || 0) - (a.deleted_at || 0))
+      const response = await memoApi.getTrash()
+      if (response.code === 200) {
+        trashedMemos.value = response.data
+        trashedMemos.value.sort((a, b) => (b.deleted_at || 0) - (a.deleted_at || 0))
+      }
     } finally {
       loading.value = false
     }
   }
 
   async function restoreMemo(id: string) {
-    await invoke('restore_memo', { id })
+    await memoApi.restoreMemo(id)
     await fetchTrashed()
   }
 
   async function permanentDelete(id: string) {
-    await invoke('permanent_delete_memo', { id })
+    await memoApi.permanentDeleteMemo(id)
     await fetchTrashed()
   }
 
   async function emptyTrash() {
-    await invoke('empty_trash')
+    await memoApi.emptyTrash()
     await fetchTrashed()
   }
 
   async function cleanupTrash(days: number) {
-    await invoke('cleanup_trash', { days })
+    await memoApi.cleanupTrash(days)
     await fetchTrashed()
   }
 

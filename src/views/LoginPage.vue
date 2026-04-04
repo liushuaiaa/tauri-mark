@@ -20,7 +20,7 @@
       </div>
 
       <h1 class="app-title">记事本</h1>
-      <p class="login-subtitle">{{ isSetup ? '请输入密码登录' : '首次使用，请设置密码' }}</p>
+      <p class="login-subtitle">{{ isRegister ? '注册账号' : '登录账号' }}</p>
 
       <el-form
         ref="formRef"
@@ -29,11 +29,23 @@
         class="login-form"
         @submit.prevent="handleSubmit"
       >
+        <el-form-item prop="username">
+          <el-input
+            v-model="form.username"
+            placeholder="请输入用户名"
+            size="large"
+          >
+            <template #prefix>
+              <el-icon><User /></el-icon>
+            </template>
+          </el-input>
+        </el-form-item>
+
         <el-form-item prop="password">
           <el-input
             v-model="form.password"
             type="password"
-            :placeholder="isSetup ? '请输入密码' : '请设置密码'"
+            :placeholder="isRegister ? '请设置密码' : '请输入密码'"
             show-password
             size="large"
             @keyup.enter="handleSubmit"
@@ -44,7 +56,7 @@
           </el-input>
         </el-form-item>
 
-        <el-form-item v-if="!isSetup" prop="confirmPassword">
+        <el-form-item v-if="isRegister" prop="confirmPassword">
           <el-input
             v-model="form.confirmPassword"
             type="password"
@@ -66,13 +78,16 @@
           class="submit-btn"
           @click="handleSubmit"
         >
-          {{ isSetup ? '登 录' : '设置密码' }}
+          {{ isRegister ? '注 册' : '登 录' }}
         </el-button>
       </el-form>
 
-      <div v-if="errorMsg" class="error-tip">
-        <el-icon><Warning /></el-icon>
-        {{ errorMsg }}
+      <div class="switch-mode">
+        <span v-if="!isRegister">还没有账号？</span>
+        <span v-else>已有账号？</span>
+        <el-button type="primary" link @click="switchMode">
+          {{ isRegister ? '立即登录' : '立即注册' }}
+        </el-button>
       </div>
     </div>
   </div>
@@ -82,23 +97,23 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { Lock, Warning } from '@element-plus/icons-vue'
-import { checkAuthSetup, login, logout, setupPassword } from '../stores/auth'
+import { Lock, User } from '@element-plus/icons-vue'
+import { checkAuthSetup, login, logout, register } from '../stores/auth'
 
 const router = useRouter()
 
 const formRef = ref()
 const loading = ref(false)
-const errorMsg = ref('')
-const isSetup = ref(true)
+const isRegister = ref(false)
 
 const form = ref({
+  username: '',
   password: '',
   confirmPassword: ''
 })
 
 const validateConfirmPassword = (rule: any, value: string, callback: any) => {
-  if (value !== form.value.password) {
+  if (isRegister.value && value !== form.value.password) {
     callback(new Error('两次输入的密码不一致'))
   } else {
     callback()
@@ -106,6 +121,10 @@ const validateConfirmPassword = (rule: any, value: string, callback: any) => {
 }
 
 const rules = computed(() => ({
+  username: [
+    { required: true, message: '请输入用户名', trigger: 'blur' },
+    { min: 3, message: '用户名至少3位', trigger: 'blur' }
+  ],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
     { min: 4, message: '密码至少4位', trigger: 'blur' }
@@ -118,12 +137,19 @@ const rules = computed(() => ({
 
 onMounted(async () => {
   logout()
-  isSetup.value = await checkAuthSetup()
+  isRegister.value = !(await checkAuthSetup())
 })
 
-async function handleSubmit() {
-  errorMsg.value = ''
+function switchMode() {
+  isRegister.value = !isRegister.value
+  form.value = {
+    username: '',
+    password: '',
+    confirmPassword: ''
+  }
+}
 
+async function handleSubmit() {
   try {
     await formRef.value?.validate()
   } catch {
@@ -133,26 +159,19 @@ async function handleSubmit() {
   loading.value = true
 
   try {
-    if (isSetup.value) {
-      const success = await login(form.value.password)
-      if (success) {
-        router.push('/')
-      } else {
-        errorMsg.value = '密码错误'
-      }
-    } else {
+    if (isRegister.value) {
       if (form.value.password !== form.value.confirmPassword) {
-        errorMsg.value = '两次输入的密码不一致'
         return
       }
-      const success = await setupPassword(form.value.password)
-      if (success) {
-        ElMessage.success('密码设置成功')
-        router.push('/')
-      } else {
-        errorMsg.value = '密码设置失败'
-      }
+      await register(form.value.username, form.value.password)
+      ElMessage.success('注册成功')
+      router.push('/')
+    } else {
+      await login(form.value.username, form.value.password)
+      router.push('/')
     }
+  } catch {
+    // Error message is already shown by ElMessage in api/client.ts
   } finally {
     loading.value = false
   }
@@ -285,17 +304,13 @@ async function handleSubmit() {
   transform: translateY(0);
 }
 
-.error-tip {
+.switch-mode {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  color: #f56c6c;
-  font-size: 14px;
+  gap: 8px;
   margin-top: 20px;
-  padding: 10px 16px;
-  background: rgba(245, 108, 108, 0.1);
-  border-radius: 8px;
-  border: 1px solid rgba(245, 108, 108, 0.2);
+  font-size: 14px;
+  color: var(--color-text-secondary);
 }
 </style>

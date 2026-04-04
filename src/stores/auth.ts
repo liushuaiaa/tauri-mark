@@ -1,63 +1,73 @@
 import { ref } from 'vue'
-import { invoke } from '@tauri-apps/api/core'
+import { authApi } from '../api/auth'
 
-interface AuthConfig {
-  password_hash: string
-  salt: string
+const STORAGE_TOKEN_KEY = 'auth_token'
+const STORAGE_USERNAME_KEY = 'auth_username'
+const STORAGE_USERID_KEY = 'auth_userid'
+
+function getInitialLoggedIn(): boolean {
+  return !!localStorage.getItem(STORAGE_TOKEN_KEY)
 }
 
-const STORAGE_KEY = 'auth_logged_in'
-
-function getInitialValue(): boolean {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    if (stored !== null) return JSON.parse(stored)
-  } catch {}
-  return false
+function getInitialUsername(): string | null {
+  return localStorage.getItem(STORAGE_USERNAME_KEY)
 }
 
-export const isLoggedIn = ref(getInitialValue())
+export const isLoggedIn = ref(getInitialLoggedIn())
+export const currentUsername = ref(getInitialUsername())
 
-export function setLoggedIn(value: boolean) {
-  isLoggedIn.value = value
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(value))
-  } catch {}
+export function getToken(): string | null {
+  return localStorage.getItem(STORAGE_TOKEN_KEY)
 }
 
 export async function checkAuthSetup(): Promise<boolean> {
-  try {
-    const config = await invoke<AuthConfig | null>('get_auth_config')
-    return config !== null && config.password_hash !== ''
-  } catch {
-    return false
-  }
+  // Always return true since we're using remote API now
+  return true
 }
 
-export async function setupPassword(password: string): Promise<boolean> {
+export async function register(username: string, password: string): Promise<boolean> {
   try {
-    await invoke('save_auth_config', { password })
-    setLoggedIn(true)
-    return true
-  } catch (e) {
-    console.error('Failed to setup password:', e)
-    return false
-  }
-}
-
-export async function login(password: string): Promise<boolean> {
-  try {
-    const success = await invoke<boolean>('verify_password', { password })
-    if (success) {
-      setLoggedIn(true)
+    const response = await authApi.register({ username, password })
+    if (response.code === 200) {
+      localStorage.setItem(STORAGE_TOKEN_KEY, response.data.token)
+      localStorage.setItem(STORAGE_USERNAME_KEY, response.data.username)
+      localStorage.setItem(STORAGE_USERID_KEY, String(response.data.userId))
+      isLoggedIn.value = true
+      currentUsername.value = response.data.username
+      return true
+    } else {
+      throw new Error(response.message)
     }
-    return success
-  } catch (e) {
+  } catch (e: any) {
+    console.error('Failed to register:', e)
+    const message = e?.response?.data?.message || e?.message || '注册失败'
+    throw new Error(message)
+  }
+}
+
+export async function login(username: string, password: string): Promise<boolean> {
+  try {
+    const response = await authApi.login({ username, password })
+    if (response.code === 200) {
+      localStorage.setItem(STORAGE_TOKEN_KEY, response.data.token)
+      localStorage.setItem(STORAGE_USERNAME_KEY, response.data.username)
+      localStorage.setItem(STORAGE_USERID_KEY, String(response.data.userId))
+      isLoggedIn.value = true
+      currentUsername.value = response.data.username
+      return true
+    } else {
+      throw new Error(response.message)
+    }
+  } catch (e: any) {
     console.error('Failed to login:', e)
-    return false
+    throw e
   }
 }
 
 export function logout() {
-  setLoggedIn(false)
+  localStorage.removeItem(STORAGE_TOKEN_KEY)
+  localStorage.removeItem(STORAGE_USERNAME_KEY)
+  localStorage.removeItem(STORAGE_USERID_KEY)
+  isLoggedIn.value = false
+  currentUsername.value = null
 }

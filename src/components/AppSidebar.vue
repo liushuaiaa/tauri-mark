@@ -36,13 +36,16 @@ import { Burger, Calendar, Delete, Memo, Setting } from '@element-plus/icons-vue
 import { ElBadge, ElButton } from 'element-plus'
 import { sidebarCollapsed } from '../stores/sidebar'
 import { useTrashStore } from '../stores/trash'
+import { isLoggedIn } from '../stores/auth'
 
 const trashStore = useTrashStore()
 
 const trashCount = computed(() => trashStore.trashedMemos.length)
 
 onMounted(() => {
-  trashStore.fetchTrashed()
+  if (isLoggedIn.value) {
+    trashStore.fetchTrashed()
+  }
 })
 
 function toggle() {

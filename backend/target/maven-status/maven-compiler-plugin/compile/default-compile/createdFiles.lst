@@ -1,0 +1,16 @@
+com\taurimark\TauriMarkApplication.class
+com\taurimark\service\AuthService.class
+com\taurimark\config\JwtAuthenticationFilter.class
+com\taurimark\mapper\MemoMapper.class
+com\taurimark\controller\AuthController.class
+com\taurimark\config\JwtUtil.class
+com\taurimark\dto\LoginRequest.class
+com\taurimark\dto\AuthResponse.class
+com\taurimark\entity\Memo.class
+com\taurimark\config\SecurityConfig.class
+com\taurimark\entity\User.class
+com\taurimark\dto\ApiResponse.class
+com\taurimark\controller\MemoController.class
+com\taurimark\service\MemoService.class
+com\taurimark\dto\RegisterRequest.class
+com\taurimark\mapper\UserMapper.class
