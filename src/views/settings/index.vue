@@ -34,7 +34,7 @@
 import { ref, onMounted } from 'vue'
 import { getVersion } from '@tauri-apps/api/app'
 import { ElButton, ElInputNumber, ElMessage } from 'element-plus'
-import { useTrashStore } from '../stores/trash'
+import { useTrashStore } from '../../stores/trash'
 
 const trashStore = useTrashStore()
 const cleanupDays = ref(7)

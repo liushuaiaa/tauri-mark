@@ -24,7 +24,7 @@ import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft } from '@element-plus/icons-vue'
 import { ElButton, ElEmpty } from 'element-plus'
-import { useMemoStore } from '../stores/memo'
+import { useMemoStore } from '../../stores/memo'
 
 const route = useRoute()
 const router = useRouter()

@@ -28,8 +28,8 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
-import AppSidebar from './components/AppSidebar.vue'
-import TitleBar from './components/TitleBar.vue'
+import AppSidebar from './components/common/AppSidebar.vue'
+import TitleBar from './components/common/TitleBar.vue'
 import { sidebarCollapsed } from './stores/sidebar'
 import { cursorEnabled } from './stores/cursor'
 import { useRoute } from 'vue-router'

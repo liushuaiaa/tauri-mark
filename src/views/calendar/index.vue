@@ -6,8 +6,8 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import CustomCalendar from '../components/CustomCalendar.vue'
-import { useMemoStore } from '../stores/memo'
+import CustomCalendar from './common/CustomCalendar.vue'
+import { useMemoStore } from '../../stores/memo'
 
 const store = useMemoStore()
 

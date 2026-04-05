@@ -37,8 +37,8 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { getCurrentWindow } from '@tauri-apps/api/window'
-import { cursorEnabled } from '../stores/cursor'
-import { useWeatherStore } from '../stores/weather'
+import { cursorEnabled } from '../../stores/cursor'
+import { useWeatherStore } from '../../stores/weather'
 import { storeToRefs } from 'pinia'
 import { Loading } from '@element-plus/icons-vue'
 

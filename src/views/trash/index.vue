@@ -38,7 +38,7 @@
 import { onMounted } from 'vue'
 import { Delete, Refresh } from '@element-plus/icons-vue'
 import { ElButton, ElCard, ElEmpty, ElMessage, ElMessageBox } from 'element-plus'
-import { useTrashStore } from '../stores/trash'
+import { useTrashStore } from '../../stores/trash'
 
 const store = useTrashStore()
 

@@ -121,8 +121,8 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Delete, Lock, User } from '@element-plus/icons-vue'
 import CryptoJS from 'crypto-js'
-import { checkAuthSetup, login, logout, register } from '../stores/auth'
-import { sidebarCollapsed } from '../stores/sidebar'
+import { checkAuthSetup, login, logout, register } from '../../stores/auth'
+import { sidebarCollapsed } from '../../stores/sidebar'
 
 interface SavedAccount {
   username: string

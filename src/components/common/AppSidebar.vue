@@ -36,9 +36,9 @@ import { computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { Burger, Calendar, Delete, Memo, Setting, SwitchButton } from '@element-plus/icons-vue'
 import { ElBadge, ElButton, ElMessage, ElMessageBox } from 'element-plus'
-import { sidebarCollapsed } from '../stores/sidebar'
-import { useTrashStore } from '../stores/trash'
-import { isLoggedIn, logout } from '../stores/auth'
+import { sidebarCollapsed } from '../../stores/sidebar'
+import { useTrashStore } from '../../stores/trash'
+import { isLoggedIn, logout } from '../../stores/auth'
 
 const router = useRouter()
 const route = useRoute()

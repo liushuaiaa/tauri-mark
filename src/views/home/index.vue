@@ -61,7 +61,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { useMemoStore } from '../stores/memo'
+import { useMemoStore } from '../../stores/memo'
 import { ElButton, ElCard, ElDatePicker, ElEmpty, ElIcon, ElInput, ElMessage, ElMessageBox } from 'element-plus'
 import { Delete, Edit, Loading, Lock, Plus, Search } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'

@@ -38,20 +38,12 @@
     />
 
     <!-- 密码设置弹窗 -->
-    <CommonDialog v-model="showPasswordDialog" title="设置密码" width="400px">
-      <ElForm>
-        <ElFormItem label="密码">
-          <ElInput v-model="tempPassword" type="password" placeholder="请输入密码，留空则清除密码" show-password />
-        </ElFormItem>
-        <ElFormItem label="密码提示（可选）">
-          <ElInput v-model="tempPasswordHint" placeholder="输入提示信息" />
-        </ElFormItem>
-      </ElForm>
-      <template #footer>
-        <ElButton @click="showPasswordDialog = false">取消</ElButton>
-        <ElButton type="primary" @click="confirmPassword">确认</ElButton>
-      </template>
-    </CommonDialog>
+    <PasswordDialog
+      v-model="showPasswordDialog"
+      :password="password"
+      :password-hint="passwordHint"
+      @confirm="onPasswordConfirm"
+    />
   </div>
 </template>
 
@@ -59,16 +51,16 @@
 import { onMounted, ref, reactive, nextTick } from 'vue'
 import { listen } from '@tauri-apps/api/event'
 import { invoke } from '@tauri-apps/api/core'
-import { useMemoStore } from '../stores/memo'
-import type { Memo } from '../api/type/memo'
-import { useWeatherStore } from '../stores/weather'
+import { useMemoStore } from '../../stores/memo'
+import type { Memo } from '../../api/type/memo'
+import { useWeatherStore } from '../../stores/weather'
 import { ElButton, ElForm, ElFormItem, ElInput, ElMessage, ElIcon } from 'element-plus'
 import { ArrowLeft, Lock } from '@element-plus/icons-vue'
 import { useRoute, useRouter } from 'vue-router'
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
-import ImportDialog from './ImportDialog.vue'
-import CommonDialog from '../components/CommonDialog.vue'
+import ImportDialog from './common/ImportDialog.vue'
+import PasswordDialog from './common/PasswordDialog.vue'
 
 const store = useMemoStore()
 const weatherStore = useWeatherStore()
@@ -88,8 +80,6 @@ const editorRef = ref<InstanceType<typeof QuillEditor> | null>(null)
 const showImportDialog = ref(false)
 const importedContent = ref('')
 const showPasswordDialog = ref(false)
-const tempPassword = ref('')
-const tempPasswordHint = ref('')
 
 const editorOptions = reactive({
   theme: 'snow',
@@ -170,10 +160,9 @@ function confirmImport() {
   ElMessage.success('导入成功')
 }
 
-function confirmPassword() {
-  password.value = tempPassword.value
-  passwordHint.value = tempPasswordHint.value
-  showPasswordDialog.value = false
+function onPasswordConfirm(newPassword: string, newHint: string) {
+  password.value = newPassword
+  passwordHint.value = newHint
   ElMessage.success(password.value ? '密码已设置' : '密码已清除')
 }
 

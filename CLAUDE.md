@@ -39,14 +39,14 @@ npm run tauri build  # Tauri 发布版
 ### 视图组件
 | 组件 | 说明 |
 |------|------|
-| `MemoList.vue` | 卡片列表 |
-| `MemoEditor.vue` | 编辑器 (Quill) |
-| `CalendarPage.vue` | 日历视图 |
-| `DayMemos.vue` | 日期备忘录 |
+| `home/` | 首页（卡片列表） |
+| `editor/` | 编辑器 (Quill) |
+| `calendar/` | 日历视图 |
+| `day/` | 日期备忘录 |
+| `week/` | 周总结 |
+| `trash/` | 回收站 |
+| `settings/` | 设置页 |
 | `LoginPage.vue` | 登录页 |
-| `Settings.vue` | 设置页 |
-| `TrashView.vue` | 回收站 |
-| `WeekSummary.vue` | 周总结 |
 | `ImportDialog.vue` | 导入弹窗 |
 
 ### 后端包结构

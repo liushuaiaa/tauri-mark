@@ -41,7 +41,7 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ArrowLeft, ArrowRight, Memo, Folder } from '@element-plus/icons-vue'
-import { useMemoStore } from '../stores/memo'
+import { useMemoStore } from '../../../stores/memo'
 
 const router = useRouter()
 const store = useMemoStore()
