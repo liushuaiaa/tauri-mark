@@ -1,6 +1,13 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 
+// 通用 API 响应类型
+export interface ApiResponse<T> {
+  code: number
+  message: string
+  data: T
+}
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
 
 const api = axios.create({
@@ -55,5 +62,10 @@ api.interceptors.response.use(
     return Promise.reject(error)
   }
 )
+
+// 封装请求方法，直接返回 ApiResponse<T>
+export const request = <T>(config: any): Promise<ApiResponse<T>> => {
+  return api(config) as Promise<ApiResponse<T>>
+}
 
 export default api

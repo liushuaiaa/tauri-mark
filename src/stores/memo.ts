@@ -19,7 +19,7 @@ export const useMemoStore = defineStore('memo', () => {
   }) {
     loading.value = true
     try {
-      const response = await memoApi.getMemos({
+      const response = await memoApi.page({
         keyword: params?.keyword,
         startDate: params?.startDate,
         endDate: params?.endDate,
@@ -45,7 +45,7 @@ export const useMemoStore = defineStore('memo', () => {
     loading.value = true
     try {
       const nextPage = currentPage.value + 1
-      const response = await memoApi.getMemos({
+      const response = await memoApi.page({
         keyword: params?.keyword,
         startDate: params?.startDate,
         endDate: params?.endDate,
@@ -64,20 +64,20 @@ export const useMemoStore = defineStore('memo', () => {
 
   async function saveMemo(memo: Memo, isNew: boolean) {
     if (isNew) {
-      await memoApi.createMemo(memo)
+      await memoApi.add(memo)
     } else {
-      await memoApi.updateMemo(memo.id, memo)
+      await memoApi.edit(memo)
     }
     await fetchMemos()
   }
 
   async function trashMemo(id: string) {
-    await memoApi.deleteMemo(id)
+    await memoApi.delete(id)
     await fetchMemos()
   }
 
   async function deleteMemo(id: string) {
-    await memoApi.permanentDeleteMemo(id)
+    await memoApi.permanentDelete(id)
     await fetchMemos()
   }
 

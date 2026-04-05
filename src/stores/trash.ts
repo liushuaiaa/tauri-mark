@@ -11,7 +11,7 @@ export const useTrashStore = defineStore('trash', () => {
   async function fetchTrashed() {
     loading.value = true
     try {
-      const response = await memoApi.getTrash()
+      const response = await memoApi.trash()
       if (response.code === 200) {
         trashedMemos.value = response.data
         trashedMemos.value.sort((a, b) => (b.deleted_at || 0) - (a.deleted_at || 0))
@@ -22,12 +22,12 @@ export const useTrashStore = defineStore('trash', () => {
   }
 
   async function restoreMemo(id: string) {
-    await memoApi.restoreMemo(id)
+    await memoApi.restore(id)
     await fetchTrashed()
   }
 
   async function permanentDelete(id: string) {
-    await memoApi.permanentDeleteMemo(id)
+    await memoApi.permanentDelete(id)
     await fetchTrashed()
   }
 

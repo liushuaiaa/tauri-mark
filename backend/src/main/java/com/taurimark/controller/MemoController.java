@@ -27,7 +27,17 @@ public class MemoController {
         return Long.parseLong(auth.getName());
     }
 
-    @GetMapping
+    @GetMapping("/list")
+    public ResponseEntity<ApiResponse<List<Memo>>> getList(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Long startDate,
+            @RequestParam(required = false) Long endDate) {
+        Long userId = getCurrentUserId();
+        List<Memo> memos = memoService.getMemos(userId, keyword, startDate, endDate);
+        return ResponseEntity.ok(ApiResponse.success(memos));
+    }
+
+    @GetMapping("/page")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getMemos(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) Long startDate,
@@ -39,13 +49,13 @@ public class MemoController {
         int total = memoService.countMemos(userId, keyword, startDate, endDate);
         Map<String, Object> result = new HashMap<>();
         result.put("list", memos);
-        result.put("total", total);
         result.put("page", page);
         result.put("pageSize", pageSize);
+        result.put("total", total);
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/query/{id}")
     public ResponseEntity<ApiResponse<Memo>> getMemo(@PathVariable String id) {
         Memo memo = memoService.getMemo(id, getCurrentUserId());
         if (memo == null) {
@@ -54,26 +64,28 @@ public class MemoController {
         return ResponseEntity.ok(ApiResponse.success(memo));
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<ApiResponse<Memo>> createMemo(@RequestBody Memo memo) {
         memoService.saveMemo(memo, getCurrentUserId());
         return ResponseEntity.ok(ApiResponse.success(memo));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Memo>> updateMemo(@PathVariable String id, @RequestBody Memo memo) {
-        memo.setId(id);
+    @PutMapping("/edit")
+    public ResponseEntity<ApiResponse<Memo>> updateMemo(@RequestBody Memo memo) {
+        if (memo.getId() == null || memo.getId().isEmpty()) {
+            return ResponseEntity.status(400).body(ApiResponse.error(400, "ID不能为空"));
+        }
         memoService.saveMemo(memo, getCurrentUserId());
         return ResponseEntity.ok(ApiResponse.success(memo));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteMemo(@PathVariable String id) {
         memoService.trashMemo(id, getCurrentUserId());
         return ResponseEntity.ok(ApiResponse.success());
     }
 
-    @DeleteMapping("/{id}/permanent")
+    @DeleteMapping("/delete/{id}/permanent")
     public ResponseEntity<ApiResponse<Void>> permanentDeleteMemo(@PathVariable String id) {
         memoService.permanentDeleteMemo(id, getCurrentUserId());
         return ResponseEntity.ok(ApiResponse.success());
