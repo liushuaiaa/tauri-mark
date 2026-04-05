@@ -42,8 +42,16 @@
           <div class="card-footer">
             <span class="card-date">{{ formatDate(memo.created_at) }}</span>
             <div class="card-actions">
-              <ElButton :icon="Edit" link @click="router.push(`/editor/${memo.id}`)">编辑</ElButton>
-              <ElButton :icon="Delete" link type="danger" @click="handleTrash(memo.id, memo.title)">删除</ElButton>
+              <ElButton
+                v-for="action in cardActions"
+                :key="action.type"
+                :icon="action.icon"
+                link
+                :type="action.type"
+                @click="action.handler(memo.id, memo.title)"
+              >
+                {{ action.label }}
+              </ElButton>
             </div>
           </div>
         </div>
@@ -69,6 +77,11 @@ import { useRouter } from 'vue-router'
 const store = useMemoStore()
 const router = useRouter()
 const searchQuery = ref('')
+
+const cardActions = [
+  { type: 'default' as const, icon: Edit, label: '编辑', handler: (id: string) => router.push(`/editor/${id}`) },
+  { type: 'danger' as const, icon: Delete, label: '删除', handler: handleTrash },
+]
 const dateRange = ref<[Date, Date] | null>(null)
 const listRef = ref<HTMLElement | null>(null)
 

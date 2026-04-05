@@ -25,8 +25,16 @@
             <div class="trash-date">删除于 {{ formatDate(memo.deleted_at) }}</div>
           </div>
           <div class="trash-actions">
-            <ElButton :icon="Refresh" link @click="handleRestore(memo.id)">恢复</ElButton>
-            <ElButton :icon="Delete" link type="danger" @click="handlePermanentDelete(memo.id, memo.title)">删除</ElButton>
+            <ElButton
+              v-for="action in trashActions"
+              :key="action.type"
+              :icon="action.icon"
+              link
+              :type="action.type"
+              @click="action.handler(memo.id, memo.title)"
+            >
+              {{ action.label }}
+            </ElButton>
           </div>
         </div>
       </ElCard>
@@ -41,6 +49,11 @@ import { ElButton, ElCard, ElEmpty, ElMessage, ElMessageBox } from 'element-plus
 import { useTrashStore } from '../../stores/trash'
 
 const store = useTrashStore()
+
+const trashActions = [
+  { type: 'default' as const, icon: Refresh, label: '恢复', handler: handleRestore },
+  { type: 'danger' as const, icon: Delete, label: '删除', handler: handlePermanentDelete },
+]
 
 onMounted(() => {
   store.fetchTrashed()
