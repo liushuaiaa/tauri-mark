@@ -2,8 +2,6 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { memoApi, type Memo } from '../api/memo'
 
-export { type Memo }
-
 export const useMemoStore = defineStore('memo', () => {
   const memos = ref<Memo[]>([])
   const loading = ref(false)

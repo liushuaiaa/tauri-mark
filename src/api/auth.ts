@@ -1,4 +1,4 @@
-import { request, type ApiResponse } from '../axios/client'
+import { request } from '../axios/client'
 import type { LoginRequest, RegisterRequest, AuthResponse } from './type/auth'
 
 export class AuthApi {
