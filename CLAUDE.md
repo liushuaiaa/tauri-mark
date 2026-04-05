@@ -49,14 +49,6 @@ npm run tauri build  # Tauri 发布版
 | `WeekSummary.vue` | 周总结 |
 | `ImportDialog.vue` | 导入弹窗 |
 
-### 公共组件
-| 组件 | 说明 |
-|------|------|
-| `CommonDialog.vue` | 全局弹窗，固定居中，内容滚动 |
-| `CustomCalendar.vue` | 日历，支持日期跳转和备忘录图标 |
-| `AppSidebar.vue` | 侧边栏导航 |
-| `TitleBar.vue` | 自定义标题栏 |
-
 ### 后端包结构
 controller / service / mapper / entity / dto / config
 
@@ -101,6 +93,7 @@ PageResponse<T> { list: T[]; total: number; page: number; pageSize: number }
 ```
 
 ## 代码规范
-遵循 `.claude/` 目录下的规则文件：
-- `api-rules.md` - API 接口规范
-- `frontend-rules.md` - 前端代码规范
+遵循 `.claude/rules/` 目录下的规则文件：
+- `api.md` - API 接口规范
+- `frontend.md` - 前端代码规范（含公共组件优先规则）
+- `components.md` - 公共组件清单
