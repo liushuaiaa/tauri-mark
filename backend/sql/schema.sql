@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS memo (
     id VARCHAR(36) PRIMARY KEY COMMENT 'UUID',
     user_id BIGINT NOT NULL COMMENT '所属用户',
     title VARCHAR(255) DEFAULT '' COMMENT '标题',
-    content TEXT COMMENT '内容',
+    content LONGTEXT COMMENT '内容',
     created_at BIGINT NOT NULL COMMENT '创建时间戳',
     updated_at BIGINT NOT NULL COMMENT '更新时间戳',
     deleted_at BIGINT DEFAULT NULL COMMENT '删除时间戳',

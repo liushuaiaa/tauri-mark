@@ -67,7 +67,6 @@ export const useMemoStore = defineStore('memo', () => {
     } else {
       await memoApi.edit(memo)
     }
-    await fetchMemos()
   }
 
   async function trashMemo(id: string) {

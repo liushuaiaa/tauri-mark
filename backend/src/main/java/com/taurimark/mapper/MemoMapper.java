@@ -8,6 +8,15 @@ import java.util.List;
 @Mapper
 public interface MemoMapper {
     @Select("SELECT * FROM memo WHERE user_id = #{userId} AND deleted_at IS NULL ORDER BY updated_at DESC")
+    @Results({
+        @Result(property = "userId", column = "user_id"),
+        @Result(property = "createdAt", column = "created_at"),
+        @Result(property = "updatedAt", column = "updated_at"),
+        @Result(property = "deletedAt", column = "deleted_at"),
+        @Result(property = "passwordHint", column = "password_hint"),
+        @Result(property = "weatherIcon", column = "weather_icon"),
+        @Result(property = "weatherTemp", column = "weather_temp")
+    })
     List<Memo> findByUserId(@Param("userId") Long userId);
 
     @Select("<script>" +
@@ -18,6 +27,15 @@ public interface MemoMapper {
             "ORDER BY updated_at DESC " +
             "LIMIT #{offset}, #{limit}" +
             "</script>")
+    @Results({
+        @Result(property = "userId", column = "user_id"),
+        @Result(property = "createdAt", column = "created_at"),
+        @Result(property = "updatedAt", column = "updated_at"),
+        @Result(property = "deletedAt", column = "deleted_at"),
+        @Result(property = "passwordHint", column = "password_hint"),
+        @Result(property = "weatherIcon", column = "weather_icon"),
+        @Result(property = "weatherTemp", column = "weather_temp")
+    })
     List<Memo> findByUserIdWithPage(@Param("userId") Long userId,
                                     @Param("keyword") String keyword,
                                     @Param("startDate") Long startDate,
@@ -37,9 +55,27 @@ public interface MemoMapper {
                       @Param("endDate") Long endDate);
 
     @Select("SELECT * FROM memo WHERE id = #{id} AND user_id = #{userId}")
+    @Results({
+        @Result(property = "userId", column = "user_id"),
+        @Result(property = "createdAt", column = "created_at"),
+        @Result(property = "updatedAt", column = "updated_at"),
+        @Result(property = "deletedAt", column = "deleted_at"),
+        @Result(property = "passwordHint", column = "password_hint"),
+        @Result(property = "weatherIcon", column = "weather_icon"),
+        @Result(property = "weatherTemp", column = "weather_temp")
+    })
     Memo findByIdAndUserId(@Param("id") String id, @Param("userId") Long userId);
 
     @Select("SELECT * FROM memo WHERE user_id = #{userId} AND deleted_at IS NOT NULL ORDER BY deleted_at DESC")
+    @Results({
+        @Result(property = "userId", column = "user_id"),
+        @Result(property = "createdAt", column = "created_at"),
+        @Result(property = "updatedAt", column = "updated_at"),
+        @Result(property = "deletedAt", column = "deleted_at"),
+        @Result(property = "passwordHint", column = "password_hint"),
+        @Result(property = "weatherIcon", column = "weather_icon"),
+        @Result(property = "weatherTemp", column = "weather_temp")
+    })
     List<Memo> findTrashedByUserId(@Param("userId") Long userId);
 
     @Insert("INSERT INTO memo(id, user_id, title, content, created_at, updated_at, encrypted, password_hint, weather_icon, weather_temp) " +

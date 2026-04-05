@@ -48,6 +48,8 @@ api.interceptors.response.use(
 
     ElMessage.error(errorMessage)
 
+    // Only redirect to login for auth errors (401/403)
+    // Do NOT redirect for other errors like 413 (Payload Too Large)
     if (error.response?.status === 401 || error.response?.status === 403) {
       localStorage.removeItem(TOKEN_KEY)
       localStorage.removeItem(USERNAME_KEY)
@@ -55,7 +57,7 @@ api.interceptors.response.use(
       window.location.href = '/login'
     }
 
-    // Return the error response data for business errors (like 400)
+    // Return the error response data for business errors (like 400, 413)
     if (error.response?.data) {
       return Promise.reject(error.response.data)
     }
