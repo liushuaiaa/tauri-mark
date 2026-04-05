@@ -17,7 +17,8 @@
         :key="item.path"
         :to="item.path"
         class="nav-item"
-        :class="{ 'icon-only': sidebarCollapsed }"
+        :class="{ 'icon-only': sidebarCollapsed && !item.hideWhenCollapsed }"
+        v-show="!(sidebarCollapsed && item.hideWhenCollapsed)"
         @click="navigate"
       >
         <el-icon><component :is="item.icon" /></el-icon>
@@ -46,6 +47,7 @@ import {
   Memo,
   Setting,
   SwitchButton,
+  Grid,
 } from '@element-plus/icons-vue'
 import { ElBadge, ElButton, ElMessage, ElMessageBox } from 'element-plus'
 import { sidebarCollapsed } from '../stores/sidebar'
@@ -62,13 +64,15 @@ const navItems = [
   { path: '/', name: '记事本', icon: markRaw(Memo) },
   { path: '/calendar', name: '日历', icon: markRaw(Calendar) },
   { path: '/trash', name: '回收站', icon: markRaw(Delete), showBadge: true },
-  { path: '/settings', name: '设置', icon: markRaw(Setting) },
+  { path: '/pet', name: '宠物', icon: markRaw(Grid) },
+  { path: '/settings', name: '设置', icon: markRaw(Setting), hideWhenCollapsed: true },
 ]
 
 const routeTitleMap: Record<string, string> = {
   '/': '记事本',
   '/calendar': '日历',
   '/trash': '回收站',
+  '/pet': '宠物',
   '/settings': '设置',
 }
 

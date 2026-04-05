@@ -6,6 +6,7 @@ import DayMemos from '../views/calendar/day.vue'
 import WeekSummary from '../views/calendar/week.vue'
 import TrashView from '../views/trash/index.vue'
 import Settings from '../views/settings/index.vue'
+import PetPage from '../views/pet/index.vue'
 import LoginPage from '../views/login/index.vue'
 import { isLoggedIn } from '../stores/auth'
 
@@ -46,6 +47,11 @@ const router = createRouter({
       path: '/trash',
       name: 'trash',
       component: TrashView
+    },
+    {
+      path: '/pet',
+      name: 'pet',
+      component: PetPage
     },
     {
       path: '/settings',
