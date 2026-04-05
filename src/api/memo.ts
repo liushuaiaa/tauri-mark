@@ -2,8 +2,6 @@ import { request, type ApiResponse } from '../axios/client'
 import type { Memo } from './type/memo'
 import type { PageResponse, MemoListParams, MemoPageParams } from './type/response'
 
-export type { Memo }
-
 export class MemoApi {
   // 列表
   list = (params?: MemoListParams) => {

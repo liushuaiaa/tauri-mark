@@ -23,7 +23,7 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Calendar } from 'v-calendar'
-import type { Memo } from '../api/memo'
+import type { Memo } from '../api/type/memo'
 import 'v-calendar/style.css'
 
 const props = defineProps<{

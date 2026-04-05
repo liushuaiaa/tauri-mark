@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { memoApi, type Memo } from '../api/memo'
+import { memoApi } from '../api/memo'
+import type { Memo } from '../api/type/memo'
 
 export const useTrashStore = defineStore('trash', () => {
   const trashedMemos = ref<Memo[]>([])
