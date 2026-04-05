@@ -25,6 +25,33 @@ export async function checkAuthSetup(): Promise<boolean> {
   return true
 }
 
+// 验证当前 token 是否有效
+export async function validateToken(): Promise<boolean> {
+  const token = localStorage.getItem(STORAGE_TOKEN_KEY)
+  if (!token) {
+    return false
+  }
+  try {
+    const response = await authApi.current()
+    if (response.code === 200) {
+      // token 有效，更新用户信息
+      isLoggedIn.value = true
+      currentUsername.value = response.data.username
+      return true
+    }
+  } catch (e: any) {
+    // token 无效或已过期
+    console.warn('Token validation failed:', e)
+  }
+  // token 无效，清除状态
+  localStorage.removeItem(STORAGE_TOKEN_KEY)
+  localStorage.removeItem(STORAGE_USERNAME_KEY)
+  localStorage.removeItem(STORAGE_USERID_KEY)
+  isLoggedIn.value = false
+  currentUsername.value = null
+  return false
+}
+
 export async function register(username: string, password: string): Promise<boolean> {
   try {
     const response = await authApi.register({ username, password })

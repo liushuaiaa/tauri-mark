@@ -1,4 +1,5 @@
 use std::fs;
+use tauri::{Manager, Emitter};
 
 // ============ File Commands ============
 // 这些命令仍用于本地图片导入功能
@@ -26,6 +27,17 @@ pub fn run() {
             read_file_as_base64,
             read_text_file
         ])
+        .setup(|app| {
+            let window = app.get_webview_window("main").unwrap();
+            let window_clone = window.clone();
+            window.on_window_event(move |event| {
+                if let tauri::WindowEvent::CloseRequested { .. } = event {
+                    // 通知前端清除 token
+                    let _ = window_clone.emit("clear-auth", ());
+                }
+            });
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

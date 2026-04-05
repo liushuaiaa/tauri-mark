@@ -32,7 +32,9 @@ import AppSidebar from './components/AppSidebar.vue'
 import TitleBar from './components/TitleBar.vue'
 import { sidebarCollapsed } from './stores/sidebar'
 import { cursorEnabled } from './stores/cursor'
+import { logout } from './stores/auth'
 import { useRoute } from 'vue-router'
+import { listen } from '@tauri-apps/api/event'
 
 const route = useRoute()
 const showSidebar = computed(() => route.name !== 'editor' && route.name !== 'day' && route.name !== 'login')
@@ -59,6 +61,7 @@ let lastStarTime = 0
 let isMouseMoving = false
 let mouseMoveTimeout: number | null = null
 let trailHue = 120 // start with green
+let unlistenClose: (() => void) | null = null
 
 function onMouseMove(e: MouseEvent) {
   if (!cursorEnabled.value) return
@@ -208,6 +211,13 @@ onMounted(() => {
   document.addEventListener('mouseenter', onMouseEnter)
   document.addEventListener('contextmenu', onContextMenu)
   animFrame = requestAnimationFrame(drawStars)
+
+  // 监听 Tauri 窗口关闭事件，清除 token
+  listen('clear-auth', () => {
+    logout()
+  }).then((unlisten) => {
+    unlistenClose = unlisten
+  })
 })
 
 onUnmounted(() => {
@@ -216,6 +226,9 @@ onUnmounted(() => {
   document.removeEventListener('mouseenter', onMouseEnter)
   document.removeEventListener('contextmenu', onContextMenu)
   cancelAnimationFrame(animFrame)
+  if (unlistenClose) {
+    unlistenClose()
+  }
 })
 </script>
 
