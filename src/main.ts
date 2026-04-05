@@ -7,7 +7,7 @@ import './styles/variables.css'
 import './styles/global.css'
 import router from './router'
 import App from './App.vue'
-import CommonDialog from './components/common/CommonDialog.vue'
+import CommonDialog from './components/CommonDialog.vue'
 
 const app = createApp(App)
 app.use(createPinia())

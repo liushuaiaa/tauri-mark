@@ -12,22 +12,55 @@
           <span class="weather-location">{{ weather.location }}</span>
         </span>
       </div>
-      <el-switch v-if="showCursorSwitch" v-model="cursorEnabled" size="small" @mousedown.stop @click.stop />
+      <el-switch
+        v-if="showCursorSwitch"
+        v-model="cursorEnabled"
+        size="small"
+        @mousedown.stop
+        @click.stop
+      />
     </div>
     <div class="title-bar-controls">
-      <button v-if="showMinimize" class="control-btn minimize" @click="handleMinimize" title="最小化">
+      <button
+        v-if="showMinimize"
+        class="control-btn minimize"
+        @click="handleMinimize"
+        title="最小化"
+      >
         <svg width="12" height="12" viewBox="0 0 12 12">
-          <rect x="2" y="5.5" width="8" height="1" fill="currentColor"/>
+          <rect x="2" y="5.5" width="8" height="1" fill="currentColor" />
         </svg>
       </button>
-      <button v-if="showMaximize" class="control-btn maximize" @click="handleMaximize" title="最大化">
+      <button
+        v-if="showMaximize"
+        class="control-btn maximize"
+        @click="handleMaximize"
+        title="最大化"
+      >
         <svg width="12" height="12" viewBox="0 0 12 12">
-          <rect x="2" y="2" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1"/>
+          <rect
+            x="2"
+            y="2"
+            width="8"
+            height="8"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1"
+          />
         </svg>
       </button>
-      <button v-if="showClose" class="control-btn close" @click="handleClose" title="关闭">
+      <button
+        v-if="showClose"
+        class="control-btn close"
+        @click="handleClose"
+        title="关闭"
+      >
         <svg width="12" height="12" viewBox="0 0 12 12">
-          <path d="M2 2L10 10M10 2L2 10" stroke="currentColor" stroke-width="1.2"/>
+          <path
+            d="M2 2L10 10M10 2L2 10"
+            stroke="currentColor"
+            stroke-width="1.2"
+          />
         </svg>
       </button>
     </div>
@@ -37,8 +70,8 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { getCurrentWindow } from '@tauri-apps/api/window'
-import { cursorEnabled } from '../../stores/cursor'
-import { useWeatherStore } from '../../stores/weather'
+import { cursorEnabled } from '../stores/cursor'
+import { useWeatherStore } from '../stores/weather'
 import { storeToRefs } from 'pinia'
 import { Loading } from '@element-plus/icons-vue'
 
@@ -55,7 +88,7 @@ const props = withDefaults(defineProps<Props>(), {
   showCursorSwitch: true,
   showMinimize: true,
   showMaximize: true,
-  showClose: true
+  showClose: true,
 })
 
 const appWindow = getCurrentWindow()
@@ -96,7 +129,11 @@ async function handleClose() {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    var(--color-primary-dark) 100%
+  );
   color: #fff;
   user-select: none;
   -webkit-user-select: none;
@@ -153,8 +190,12 @@ async function handleClose() {
 }
 
 @keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .weather-icon {

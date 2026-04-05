@@ -23,7 +23,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { ElButton, ElForm, ElFormItem, ElInput } from 'element-plus'
-import CommonDialog from '../../../components/common/CommonDialog.vue'
+import CommonDialog from '../../../components/CommonDialog.vue'
 
 const props = defineProps<{
   password: string

@@ -2,24 +2,54 @@
   <aside class="sidebar" :class="{ collapsed: sidebarCollapsed }">
     <div class="sidebar-header" v-if="!sidebarCollapsed">
       <span class="logo-text">{{ currentTitle }}</span>
-      <el-button :icon="SwitchButton" text @click="handleLogout" class="logout-btn" title="退出登录" />
+      <el-button
+        :icon="SwitchButton"
+        text
+        @click="handleLogout"
+        class="logout-btn"
+        title="退出登录"
+      />
     </div>
 
     <nav class="nav">
-      <router-link to="/" class="nav-item" :class="{ 'icon-only': sidebarCollapsed }" @click="navigate">
+      <router-link
+        to="/"
+        class="nav-item"
+        :class="{ 'icon-only': sidebarCollapsed }"
+        @click="navigate"
+      >
         <el-icon><Memo /></el-icon>
         <span v-if="!sidebarCollapsed">记事本</span>
       </router-link>
-      <router-link to="/calendar" class="nav-item" :class="{ 'icon-only': sidebarCollapsed }" @click="navigate">
+      <router-link
+        to="/calendar"
+        class="nav-item"
+        :class="{ 'icon-only': sidebarCollapsed }"
+        @click="navigate"
+      >
         <el-icon><Calendar /></el-icon>
         <span v-if="!sidebarCollapsed">日历</span>
       </router-link>
-      <router-link to="/trash" class="nav-item" :class="{ 'icon-only': sidebarCollapsed }" @click="navigate">
+      <router-link
+        to="/trash"
+        class="nav-item"
+        :class="{ 'icon-only': sidebarCollapsed }"
+        @click="navigate"
+      >
         <el-icon><Delete /></el-icon>
         <span v-if="!sidebarCollapsed">回收站</span>
-        <ElBadge v-if="!sidebarCollapsed && trashCount > 0" :value="trashCount" class="trash-badge" />
+        <ElBadge
+          v-if="!sidebarCollapsed && trashCount > 0"
+          :value="trashCount"
+          class="trash-badge"
+        />
       </router-link>
-      <router-link v-if="!sidebarCollapsed" to="/settings" class="nav-item" @click="navigate">
+      <router-link
+        v-if="!sidebarCollapsed"
+        to="/settings"
+        class="nav-item"
+        @click="navigate"
+      >
         <el-icon><Setting /></el-icon>
         <span>设置</span>
       </router-link>
@@ -34,11 +64,18 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { Burger, Calendar, Delete, Memo, Setting, SwitchButton } from '@element-plus/icons-vue'
+import {
+  Burger,
+  Calendar,
+  Delete,
+  Memo,
+  Setting,
+  SwitchButton,
+} from '@element-plus/icons-vue'
 import { ElBadge, ElButton, ElMessage, ElMessageBox } from 'element-plus'
-import { sidebarCollapsed } from '../../stores/sidebar'
-import { useTrashStore } from '../../stores/trash'
-import { isLoggedIn, logout } from '../../stores/auth'
+import { sidebarCollapsed } from '../stores/sidebar'
+import { useTrashStore } from '../stores/trash'
+import { isLoggedIn, logout } from '../stores/auth'
 
 const router = useRouter()
 const route = useRoute()
@@ -50,7 +87,7 @@ const routeTitleMap: Record<string, string> = {
   '/': '记事本',
   '/calendar': '日历',
   '/trash': '回收站',
-  '/settings': '设置'
+  '/settings': '设置',
 }
 
 const currentTitle = computed(() => routeTitleMap[route.path] || '记事本')
@@ -74,7 +111,7 @@ async function handleLogout() {
     await ElMessageBox.confirm('确定要退出登录吗？', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
-      type: 'warning'
+      type: 'warning',
     })
     logout()
     ElMessage.success('已退出登录')
