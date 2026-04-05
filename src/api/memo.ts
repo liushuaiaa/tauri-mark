@@ -41,7 +41,7 @@ export class MemoApi {
   // 编辑
   edit = (data: Partial<Memo>) => {
     return request<Memo>({
-      method: 'PUT',
+      method: 'POST',
       url: '/api/memos/edit',
       data
     })
@@ -50,7 +50,7 @@ export class MemoApi {
   // 删除
   delete = (id: string) => {
     return request<void>({
-      method: 'DELETE',
+      method: 'POST',
       url: `/api/memos/delete/${id}`
     })
   }
@@ -58,7 +58,7 @@ export class MemoApi {
   // 永久删除
   permanentDelete = (id: string) => {
     return request<void>({
-      method: 'DELETE',
+      method: 'POST',
       url: `/api/memos/delete/${id}/permanent`
     })
   }
@@ -82,7 +82,7 @@ export class MemoApi {
   // 清空回收站
   emptyTrash = () => {
     return request<void>({
-      method: 'DELETE',
+      method: 'POST',
       url: '/api/memos/trash/empty'
     })
   }
@@ -90,7 +90,7 @@ export class MemoApi {
   // 清理回收站
   cleanupTrash = (days: number) => {
     return request<void>({
-      method: 'DELETE',
+      method: 'POST',
       url: `/api/memos/trash/cleanup?days=${days}`
     })
   }

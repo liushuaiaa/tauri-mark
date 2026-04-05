@@ -42,11 +42,11 @@ export class XxxApi {
 
   // 编辑
   edit = (data: Partial<XXX>) =>
-    request<XXX>({ method: 'PUT', url: '/api/xxx/edit', data })
+    request<XXX>({ method: 'POST', url: '/api/xxx/edit', data })
 
   // 删除
   delete = (id: string) =>
-    request<void>({ method: 'DELETE', url: `/api/xxx/delete/${id}` })
+    request<void>({ method: 'POST', url: `/api/xxx/delete/${id}` })
 }
 
 export const xxxApi = new XxxApi()

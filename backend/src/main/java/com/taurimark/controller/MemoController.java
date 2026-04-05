@@ -70,7 +70,7 @@ public class MemoController {
         return ResponseEntity.ok(ApiResponse.success(memo));
     }
 
-    @PutMapping("/edit")
+    @PostMapping("/edit")
     public ResponseEntity<ApiResponse<Memo>> updateMemo(@RequestBody Memo memo) {
         if (memo.getId() == null || memo.getId().isEmpty()) {
             return ResponseEntity.status(400).body(ApiResponse.error(400, "ID不能为空"));
@@ -79,13 +79,13 @@ public class MemoController {
         return ResponseEntity.ok(ApiResponse.success(memo));
     }
 
-    @DeleteMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteMemo(@PathVariable String id) {
         memoService.trashMemo(id, getCurrentUserId());
         return ResponseEntity.ok(ApiResponse.success());
     }
 
-    @DeleteMapping("/delete/{id}/permanent")
+    @PostMapping("/delete/{id}/permanent")
     public ResponseEntity<ApiResponse<Void>> permanentDeleteMemo(@PathVariable String id) {
         memoService.permanentDeleteMemo(id, getCurrentUserId());
         return ResponseEntity.ok(ApiResponse.success());
@@ -104,13 +104,13 @@ public class MemoController {
         return ResponseEntity.ok(ApiResponse.success());
     }
 
-    @DeleteMapping("/trash/empty")
+    @PostMapping("/trash/empty")
     public ResponseEntity<ApiResponse<Void>> emptyTrash() {
         memoService.emptyTrash(getCurrentUserId());
         return ResponseEntity.ok(ApiResponse.success());
     }
 
-    @DeleteMapping("/trash/cleanup")
+    @PostMapping("/trash/cleanup")
     public ResponseEntity<ApiResponse<Void>> cleanupTrash(@RequestParam int days) {
         memoService.cleanupTrash(getCurrentUserId(), days);
         return ResponseEntity.ok(ApiResponse.success());
