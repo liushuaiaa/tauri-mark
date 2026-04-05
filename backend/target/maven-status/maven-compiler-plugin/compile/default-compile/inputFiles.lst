@@ -11,6 +11,7 @@ D:\xn-project\tauri-mark\backend\src\main\java\com\taurimark\controller\MemoCont
 D:\xn-project\tauri-mark\backend\src\main\java\com\taurimark\TauriMarkApplication.java
 D:\xn-project\tauri-mark\backend\src\main\java\com\taurimark\config\SecurityConfig.java
 D:\xn-project\tauri-mark\backend\src\main\java\com\taurimark\dto\ApiResponse.java
+D:\xn-project\tauri-mark\backend\src\main\java\com\taurimark\config\GlobalExceptionHandler.java
 D:\xn-project\tauri-mark\backend\src\main\java\com\taurimark\entity\Memo.java
 D:\xn-project\tauri-mark\backend\src\main\java\com\taurimark\mapper\UserMapper.java
 D:\xn-project\tauri-mark\backend\src\main\java\com\taurimark\config\JwtUtil.java

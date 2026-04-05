@@ -5,6 +5,7 @@ com\taurimark\mapper\MemoMapper.class
 com\taurimark\controller\AuthController.class
 com\taurimark\config\JwtUtil.class
 com\taurimark\dto\LoginRequest.class
+com\taurimark\config\GlobalExceptionHandler.class
 com\taurimark\dto\AuthResponse.class
 com\taurimark\entity\Memo.class
 com\taurimark\config\SecurityConfig.class
