@@ -13,45 +13,20 @@
 
     <nav class="nav">
       <router-link
-        to="/"
+        v-for="item in navItems"
+        :key="item.path"
+        :to="item.path"
         class="nav-item"
         :class="{ 'icon-only': sidebarCollapsed }"
         @click="navigate"
       >
-        <el-icon><Memo /></el-icon>
-        <span v-if="!sidebarCollapsed">记事本</span>
-      </router-link>
-      <router-link
-        to="/calendar"
-        class="nav-item"
-        :class="{ 'icon-only': sidebarCollapsed }"
-        @click="navigate"
-      >
-        <el-icon><Calendar /></el-icon>
-        <span v-if="!sidebarCollapsed">日历</span>
-      </router-link>
-      <router-link
-        to="/trash"
-        class="nav-item"
-        :class="{ 'icon-only': sidebarCollapsed }"
-        @click="navigate"
-      >
-        <el-icon><Delete /></el-icon>
-        <span v-if="!sidebarCollapsed">回收站</span>
+        <el-icon><component :is="item.icon" /></el-icon>
+        <span v-if="!sidebarCollapsed">{{ item.name }}</span>
         <ElBadge
-          v-if="!sidebarCollapsed && trashCount > 0"
+          v-if="item.showBadge && !sidebarCollapsed && trashCount > 0"
           :value="trashCount"
           class="trash-badge"
         />
-      </router-link>
-      <router-link
-        v-if="!sidebarCollapsed"
-        to="/settings"
-        class="nav-item"
-        @click="navigate"
-      >
-        <el-icon><Setting /></el-icon>
-        <span>设置</span>
       </router-link>
     </nav>
 
@@ -62,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, markRaw } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import {
   Burger,
@@ -82,6 +57,13 @@ const route = useRoute()
 const trashStore = useTrashStore()
 
 const trashCount = computed(() => trashStore.trashedMemos.length)
+
+const navItems = [
+  { path: '/', name: '记事本', icon: markRaw(Memo) },
+  { path: '/calendar', name: '日历', icon: markRaw(Calendar) },
+  { path: '/trash', name: '回收站', icon: markRaw(Delete), showBadge: true },
+  { path: '/settings', name: '设置', icon: markRaw(Setting) },
+]
 
 const routeTitleMap: Record<string, string> = {
   '/': '记事本',
