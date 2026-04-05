@@ -3,6 +3,8 @@
     <div class="login-bg">
       <div class="bg-shape shape-1"></div>
       <div class="bg-shape shape-2"></div>
+      <span class="bg-heart bg-heart-1">❤</span>
+      <span class="bg-heart bg-heart-2">❤</span>
     </div>
 
     <div class="login-card">
@@ -288,30 +290,63 @@ async function handleSubmit() {
 .login-bg {
   position: absolute;
   inset: 0;
-  overflow: hidden;
   pointer-events: none;
 }
 
 .bg-shape {
   position: absolute;
   border-radius: 50%;
-  opacity: 0.1;
 }
 
 .shape-1 {
   width: 400px;
   height: 400px;
   background: var(--color-primary);
+  opacity: 0.15;
   top: -100px;
   right: -100px;
+  animation: rotate 20s linear infinite;
 }
 
 .shape-2 {
   width: 300px;
   height: 300px;
   background: var(--color-secondary);
+  opacity: 0.2;
   bottom: -50px;
   left: -50px;
+  animation: rotate 15s linear infinite reverse;
+}
+
+.bg-heart {
+  position: absolute;
+  font-size: 80px;
+  opacity: 0.5;
+  pointer-events: none;
+  animation: rotate 20s linear infinite;
+}
+
+.bg-heart-1 {
+  top: 60px;
+  right: 60px;
+  color: var(--color-primary);
+}
+
+.bg-heart-2 {
+  bottom: 100px;
+  left: 100px;
+  font-size: 60px;
+  color: var(--color-secondary);
+  animation: rotate 15s linear infinite reverse;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .login-card {
