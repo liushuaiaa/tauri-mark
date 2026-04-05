@@ -37,17 +37,35 @@ npm run tauri build  # Tauri 发布版
 | `weather.ts` | 天气状态 |
 
 ### 视图组件
-| 组件 | 说明 |
-|------|------|
-| `home/` | 首页（卡片列表） |
-| `editor/` | 编辑器 (Quill) |
-| `calendar/` | 日历视图 |
-| `day/` | 日期备忘录 |
-| `week/` | 周总结 |
-| `trash/` | 回收站 |
-| `settings/` | 设置页 |
-| `LoginPage.vue` | 登录页 |
-| `ImportDialog.vue` | 导入弹窗 |
+```
+src/views/
+  home/                 # 首页（卡片列表）
+    index.vue           # 主页
+    editor.vue          # 编辑器 (Quill)
+    common/
+      ImportDialog.vue  # 导入弹窗
+      PasswordDialog.vue # 密码设置弹窗
+  calendar/             # 日历
+    index.vue           # 日历主页
+    day.vue             # 日期备忘录
+    week.vue            # 周总结
+    common/
+      CustomCalendar.vue # 日历组件
+  trash/
+    index.vue           # 回收站
+  settings/
+    index.vue           # 设置页
+  login/
+    index.vue           # 登录页
+```
+
+### 公共组件
+```
+src/components/
+  AppSidebar.vue      # 侧边栏导航
+  CommonDialog.vue    # 全局弹窗
+  TitleBar.vue       # 自定义标题栏
+```
 
 ### 后端包结构
 controller / service / mapper / entity / dto / config
