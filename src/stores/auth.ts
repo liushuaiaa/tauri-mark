@@ -92,6 +92,8 @@ export async function login(username: string, password: string): Promise<boolean
 }
 
 export function logout() {
+  // 尽力调用后端使 token 失效，失败也照常清除本地凭据
+  authApi.logout().catch(() => {})
   localStorage.removeItem(STORAGE_TOKEN_KEY)
   localStorage.removeItem(STORAGE_USERNAME_KEY)
   localStorage.removeItem(STORAGE_USERID_KEY)

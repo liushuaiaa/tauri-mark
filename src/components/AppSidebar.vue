@@ -32,6 +32,14 @@
     </nav>
 
     <div class="sidebar-footer">
+      <el-button
+        v-if="sidebarCollapsed"
+        :icon="SwitchButton"
+        text
+        @click="handleLogout"
+        class="footer-logout-btn"
+        title="退出登录"
+      />
       <el-button :icon="Burger" text @click="toggle" class="toggle-btn" />
     </div>
   </aside>
@@ -187,6 +195,11 @@ async function handleLogout() {
   border-top: 1px solid var(--color-border-light);
   display: flex;
   justify-content: center;
+  align-items: center;
+  gap: 4px;
+}
+.sidebar.collapsed .sidebar-footer {
+  flex-direction: column;
 }
 .toggle-btn {
   font-size: 18px;
@@ -198,5 +211,13 @@ async function handleLogout() {
 }
 .sidebar.collapsed .toggle-btn {
   width: 44px;
+}
+.footer-logout-btn {
+  font-size: 16px;
+  width: 44px;
+  color: var(--color-text-secondary);
+}
+.footer-logout-btn:hover {
+  color: var(--color-danger, #f56c6c);
 }
 </style>

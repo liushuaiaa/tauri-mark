@@ -27,6 +27,14 @@ export class AuthApi {
       url: '/api/auth/current'
     })
   }
+
+  // 退出登录
+  logout = () => {
+    return request<void>({
+      method: 'POST',
+      url: '/api/auth/logout'
+    })
+  }
 }
 
 export const authApi = new AuthApi()
