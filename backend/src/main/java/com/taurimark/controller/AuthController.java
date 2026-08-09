@@ -40,6 +40,11 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Void>> logout() {
+        return ResponseEntity.ok(ApiResponse.success());
+    }
+
     @GetMapping("/current")
     public ResponseEntity<ApiResponse<AuthResponse>> getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
