@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-08-09)
 Phase: 1 of 3 (退出登录)
 Plan: 0 of 1 in current phase
 Status: Ready to plan
-Last activity: 2026-08-09 — 初始化 GSD 项目（PROJECT.md、config、REQUIREMENTS、ROADMAP）
+Last activity: 2026-08-09 — 完成 quick 任务 260809-fnv：前后端实现退出登录
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -51,6 +51,12 @@ None yet.
 ### Blockers/Concerns
 
 None yet.
+
+## Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260809-fnv | 突然发现当前程序没有退出账号的操作，请前后端一起加上 | 2026-08-09 | b2febd2 | [260809-fnv-add-logout](./quick/260809-fnv-add-logout/) |
 
 ## Deferred Items
 
