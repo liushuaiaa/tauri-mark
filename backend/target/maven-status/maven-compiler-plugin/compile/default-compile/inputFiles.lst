@@ -2,6 +2,7 @@ D:\xn-project\tauri-mark\backend\src\main\java\com\taurimark\mapper\FeedbackMapp
 D:\xn-project\tauri-mark\backend\src\main\java\com\taurimark\controller\AuthController.java
 D:\xn-project\tauri-mark\backend\src\main\java\com\taurimark\service\FeedbackService.java
 D:\xn-project\tauri-mark\backend\src\main\java\com\taurimark\mapper\MemoMapper.java
+D:\xn-project\tauri-mark\backend\src\main\java\com\taurimark\dto\ChangePasswordRequest.java
 D:\xn-project\tauri-mark\backend\src\main\java\com\taurimark\config\JwtAuthenticationFilter.java
 D:\xn-project\tauri-mark\backend\src\main\java\com\taurimark\entity\User.java
 D:\xn-project\tauri-mark\backend\src\main\java\com\taurimark\dto\RegisterRequest.java
