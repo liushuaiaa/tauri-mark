@@ -41,3 +41,17 @@ CREATE TABLE IF NOT EXISTS feedback (
     INDEX idx_user_id (user_id),
     INDEX idx_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='反馈表';
+
+-- 刷新令牌表（滑动续期）
+CREATE TABLE IF NOT EXISTS refresh_tokens (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '自增ID',
+    user_id BIGINT NOT NULL COMMENT '所属用户',
+    token_hash VARCHAR(64) NOT NULL COMMENT 'refresh token 的 SHA-256 哈希（十六进制）',
+    expires_at DATETIME NOT NULL COMMENT '过期时间',
+    revoked TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否已吊销/已旋转作废',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    UNIQUE KEY uk_token_hash (token_hash),
+    INDEX idx_user_id (user_id),
+    INDEX idx_expires_at (expires_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='刷新令牌表';
