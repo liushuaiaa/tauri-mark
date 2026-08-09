@@ -12,11 +12,11 @@ import { validateToken } from './stores/auth'
 
 const app = createApp(App)
 app.use(createPinia())
-app.use(router)
 app.use(ElementPlus, { locale: zhCn })
 app.component('CommonDialog', CommonDialog)
 
-// 启动时验证 token 有效性
+// 启动时先验证 token 有效性，再安装路由（初始导航）并挂载
 validateToken().then(() => {
+  app.use(router)
   app.mount('#app')
 })
