@@ -10,8 +10,13 @@ export interface RegisterRequest {
 
 export interface AuthResponse {
   token: string
+  refreshToken: string
   username: string
   userId: number
+}
+
+export interface RefreshRequest {
+  refresh_token: string
 }
 
 export interface ChangePasswordRequest {

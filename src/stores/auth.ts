@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import { authApi } from '../api/auth'
 
 const STORAGE_TOKEN_KEY = 'auth_token'
+const STORAGE_REFRESH_KEY = 'auth_refresh_token'
 const STORAGE_USERNAME_KEY = 'auth_username'
 const STORAGE_USERID_KEY = 'auth_userid'
 
@@ -20,6 +21,11 @@ function getInitialUserId(): string | null {
 // 兼容后端 snake_case（user_id）与本地 camelCase（userId）两种响应字段
 function readUserId(data: any): string {
   return String(data?.user_id ?? data?.userId ?? '')
+}
+
+// 兼容后端 snake_case（refresh_token）与 camelCase（refreshToken）两种响应字段
+function readRefreshToken(data: any): string {
+  return String(data?.refresh_token ?? data?.refreshToken ?? '')
 }
 
 export const isLoggedIn = ref(getInitialLoggedIn())
@@ -71,6 +77,7 @@ export async function register(username: string, password: string): Promise<bool
     if (response.code === 200) {
       const userId = readUserId(response.data)
       localStorage.setItem(STORAGE_TOKEN_KEY, response.data.token)
+      localStorage.setItem(STORAGE_REFRESH_KEY, readRefreshToken(response.data))
       localStorage.setItem(STORAGE_USERNAME_KEY, response.data.username)
       localStorage.setItem(STORAGE_USERID_KEY, userId)
       isLoggedIn.value = true
@@ -93,6 +100,7 @@ export async function login(username: string, password: string): Promise<boolean
     if (response.code === 200) {
       const userId = readUserId(response.data)
       localStorage.setItem(STORAGE_TOKEN_KEY, response.data.token)
+      localStorage.setItem(STORAGE_REFRESH_KEY, readRefreshToken(response.data))
       localStorage.setItem(STORAGE_USERNAME_KEY, response.data.username)
       localStorage.setItem(STORAGE_USERID_KEY, userId)
       isLoggedIn.value = true
@@ -109,9 +117,11 @@ export async function login(username: string, password: string): Promise<boolean
 }
 
 export function logout() {
-  // 尽力调用后端使 token 失效，失败也照常清除本地凭据
-  authApi.logout().catch(() => {})
+  // 携带 refresh token 通知后端吊销（真正退出登录）；失败也照常清除本地凭据
+  const refreshToken = localStorage.getItem(STORAGE_REFRESH_KEY)
+  authApi.logout({ refresh_token: refreshToken || '' }).catch(() => {})
   localStorage.removeItem(STORAGE_TOKEN_KEY)
+  localStorage.removeItem(STORAGE_REFRESH_KEY)
   localStorage.removeItem(STORAGE_USERNAME_KEY)
   localStorage.removeItem(STORAGE_USERID_KEY)
   isLoggedIn.value = false
