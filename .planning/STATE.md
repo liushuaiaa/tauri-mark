@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-08-09)
 Phase: 1 of 3 (退出登录)
 Plan: 0 of 1 in current phase
 Status: Ready to plan
-Last activity: 2026-08-09 — 完成 quick 任务 260809-piu：保留自动登录，启动时校验 token
+Last activity: 2026-08-09 — 完成 quick 任务 260809-q0t：实现滑动续期（refresh token 机制）
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -65,6 +65,7 @@ None yet.
 | 260809-ft6 | 去除宠物功能（侧边栏入口、路由、页面） | 2026-08-09 | 7871bfd | [260809-ft6-remove-pet](./quick/260809-ft6-remove-pet/) |
 | 260809-ft7 | 清理后端未使用 import（AuthController、SecurityConfig） | 2026-08-09 | d12879f | [260809-ft7-remove-unused-imports](./quick/260809-ft7-remove-unused-imports/) |
 | 260809-piu | 保留自动登录，启动时校验 token（无效/过期退回登录页） | 2026-08-09 | e1e28ca | [260809-piu-login-persist-restart](./quick/260809-piu-login-persist-restart/) |
+| 260809-q0t | 实现滑动续期（refresh token 机制，401 自动刷新，避免使用中被踢） | 2026-08-09 | 23bc499 | [260809-q0t-sliding-token-refresh](./quick/260809-q0t-sliding-token-refresh/) |
 
 ## Deferred Items
 
