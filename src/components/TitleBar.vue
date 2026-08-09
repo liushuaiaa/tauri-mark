@@ -215,6 +215,10 @@ async function handleClose() {
 .user-dropdown:hover {
   outline: none;
 }
+/* el-dropdown 内部可聚焦触发器（span.title-text 带 tabindex）被浏览器绘制默认 focus 环，一并屏蔽 */
+.user-dropdown :deep(*) {
+  outline: none !important;
+}
 
 .dropdown-user-info {
   display: flex;

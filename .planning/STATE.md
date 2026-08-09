@@ -59,7 +59,7 @@ None yet.
 | 260809-fnv | 突然发现当前程序没有退出账号的操作，请前后端一起加上 | 2026-08-09 | b2febd2 | [260809-fnv-add-logout](./quick/260809-fnv-add-logout/) |
 | 260809-ft1 | 当前项目运行 GSD 指令时遵循项目 .claude/rules 规则（项目本地实现） | 2026-08-09 | acadebe | [260809-ft1-gsd-claude-rules](./quick/260809-ft1-gsd-claude-rules/) |
 | 260809-ft2 | 退出登录入口移到顶部标题栏「记事本」hover 下拉 | 2026-08-09 | 9e23ac4 | [260809-ft2-logout-dropdown-titlebar](./quick/260809-ft2-logout-dropdown-titlebar/) |
-| 260809-ft3 | 移除「记事本」hover 下拉触发器的黑色 focus 描边 | 2026-08-09 | * | [260809-ft3-dropdown-outline](./quick/260809-ft3-dropdown-outline/) |
+| 260809-ft3 | 移除「记事本」hover 下拉触发器的黑色 focus 描边 | 2026-08-09 | a035829 | [260809-ft3-dropdown-outline](./quick/260809-ft3-dropdown-outline/) |
 
 ## Deferred Items
 
