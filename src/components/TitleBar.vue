@@ -207,6 +207,7 @@ async function handleClose() {
 .user-dropdown {
   flex-shrink: 0;
   cursor: pointer;
+  color: #fff;
 }
 
 .dropdown-user-info {
