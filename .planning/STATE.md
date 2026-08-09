@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-08-09)
 Phase: 1 of 3 (退出登录)
 Plan: 0 of 1 in current phase
 Status: Ready to plan
-Last activity: 2026-08-09 — 完成 quick 任务 260809-ft6：去除宠物功能
+Last activity: 2026-08-09 — 完成 quick 任务 260809-ft7：清理后端未使用 import
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -63,6 +63,7 @@ None yet.
 | 260809-ft4 | 修改密码页 + 顶部用户信息可点击 + 移除设置页退出 | 2026-08-09 | b1688b7 | [260809-ft4-change-password](./quick/260809-ft4-change-password/) |
 | 260809-ft5 | 「个人信息」页：展示用户基本信息 + 修改密码 | 2026-08-09 | a2af1c0 | [260809-ft5-user-profile](./quick/260809-ft5-user-profile/) |
 | 260809-ft6 | 去除宠物功能（侧边栏入口、路由、页面） | 2026-08-09 | 7871bfd | [260809-ft6-remove-pet](./quick/260809-ft6-remove-pet/) |
+| 260809-ft7 | 清理后端未使用 import（AuthController、SecurityConfig） | 2026-08-09 | * | [260809-ft7-remove-unused-imports](./quick/260809-ft7-remove-unused-imports/) |
 
 ## Deferred Items
 
