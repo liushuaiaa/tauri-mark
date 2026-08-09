@@ -115,3 +115,5 @@ PageResponse<T> { list: T[]; total: number; page: number; pageSize: number }
 - `api.md` - API 接口规范
 - `frontend.md` - 前端代码规范（含公共组件优先规则）
 - `components.md` - 公共组件清单
+
+> **GSD 子代理强制要求**：作为 GSD 子代理（planner / executor / reviewer / verifier 等）执行任务时，必须**首先读取并遵循** `.claude/rules/` 目录下的**所有** `.md` 规则文件（`api.md`、`frontend.md`、`components.md`）。这些是项目级约定，优先级高于 GSD 通用默认值；规划、实现、校验任何阶段都不得跳过。
