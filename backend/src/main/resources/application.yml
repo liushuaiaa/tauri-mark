@@ -23,4 +23,5 @@ mybatis:
 
 jwt:
   secret: tauri-mark-secret-key-2024-very-long-and-secure
-  expiration: 86400000  # 24 hours in milliseconds
+  expiration: 7200000          # 2 hours in milliseconds（access token，缩短以便真正滑动）
+  refresh-expiration: 604800000  # 7 days in milliseconds（refresh token，滑动窗口）
