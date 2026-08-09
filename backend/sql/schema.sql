@@ -28,3 +28,16 @@ CREATE TABLE IF NOT EXISTS memo (
     INDEX idx_user_id (user_id),
     INDEX idx_deleted_at (deleted_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='记事本表';
+
+-- 反馈表
+CREATE TABLE IF NOT EXISTS feedback (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '自增ID',
+    user_id BIGINT NOT NULL COMMENT '所属用户',
+    title VARCHAR(255) NOT NULL COMMENT '标题',
+    content TEXT COMMENT '内容',
+    status VARCHAR(20) NOT NULL DEFAULT 'PENDING' COMMENT '状态: PENDING待处理 RESOLVED已解决 CLOSED已关闭',
+    created_at BIGINT NOT NULL COMMENT '创建时间戳',
+    updated_at BIGINT NOT NULL COMMENT '更新时间戳',
+    INDEX idx_user_id (user_id),
+    INDEX idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='反馈表';

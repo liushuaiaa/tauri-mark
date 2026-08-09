@@ -43,6 +43,7 @@ import { useRouter, useRoute } from 'vue-router'
 import {
   Burger,
   Calendar,
+  ChatDotSquare,
   Delete,
   Memo,
   Setting,
@@ -65,6 +66,7 @@ const navItems = [
   { path: '/calendar', name: '日历', icon: markRaw(Calendar) },
   { path: '/trash', name: '回收站', icon: markRaw(Delete), showBadge: true },
   { path: '/pet', name: '宠物', icon: markRaw(Grid) },
+  { path: '/feedback', name: '反馈', icon: markRaw(ChatDotSquare) },
   { path: '/settings', name: '设置', icon: markRaw(Setting), hideWhenCollapsed: true },
 ]
 
@@ -73,6 +75,7 @@ const routeTitleMap: Record<string, string> = {
   '/calendar': '日历',
   '/trash': '回收站',
   '/pet': '宠物',
+  '/feedback': '反馈',
   '/settings': '设置',
 }
 

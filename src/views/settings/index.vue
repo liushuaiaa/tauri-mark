@@ -17,6 +17,17 @@
     </div>
 
     <div class="settings-section">
+      <div class="section-title">反馈</div>
+      <div class="settings-item">
+        <div class="item-info">
+          <span class="item-label">反馈与建议</span>
+          <span class="item-desc">提交 Bug 反馈或功能建议</span>
+        </div>
+        <ElButton type="primary" @click="goFeedback">去反馈</ElButton>
+      </div>
+    </div>
+
+    <div class="settings-section">
       <div class="section-title">关于</div>
       <div class="settings-item">
         <span class="item-label">版本</span>
@@ -32,10 +43,12 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { getVersion } from '@tauri-apps/api/app'
 import { ElButton, ElInputNumber, ElMessage } from 'element-plus'
 import { useTrashStore } from '../../stores/trash'
 
+const router = useRouter()
 const trashStore = useTrashStore()
 const cleanupDays = ref(7)
 const appVersion = ref('')
@@ -43,6 +56,10 @@ const appVersion = ref('')
 onMounted(async () => {
   appVersion.value = await getVersion()
 })
+
+function goFeedback() {
+  router.push('/feedback')
+}
 
 async function handleCleanup() {
   await trashStore.cleanupTrash(cleanupDays.value)

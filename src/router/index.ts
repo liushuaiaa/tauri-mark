@@ -6,6 +6,7 @@ import DayMemos from '../views/calendar/day.vue'
 import WeekSummary from '../views/calendar/week.vue'
 import TrashView from '../views/trash/index.vue'
 import Settings from '../views/settings/index.vue'
+import FeedbackPage from '../views/feedback/index.vue'
 import PetPage from '../views/pet/index.vue'
 import LoginPage from '../views/login/index.vue'
 import { isLoggedIn } from '../stores/auth'
@@ -57,6 +58,11 @@ const router = createRouter({
       path: '/settings',
       name: 'settings',
       component: Settings
+    },
+    {
+      path: '/feedback',
+      name: 'feedback',
+      component: FeedbackPage
     }
   ]
 })
