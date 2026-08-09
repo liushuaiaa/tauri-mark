@@ -45,6 +45,21 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success());
     }
 
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth == null || !auth.isAuthenticated()) {
+                return ResponseEntity.status(401).body(ApiResponse.error(401, "未登录"));
+            }
+            Long userId = Long.parseLong(auth.getName());
+            authService.changePassword(userId, request.getOldPassword(), request.getNewPassword());
+            return ResponseEntity.ok(ApiResponse.success());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(ApiResponse.error(400, e.getMessage()));
+        }
+    }
+
     @GetMapping("/current")
     public ResponseEntity<ApiResponse<AuthResponse>> getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

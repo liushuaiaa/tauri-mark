@@ -17,17 +17,6 @@
     </div>
 
     <div class="settings-section">
-      <div class="section-title">账号</div>
-      <div class="settings-item">
-        <div class="item-info">
-          <span class="item-label">退出登录</span>
-          <span class="item-desc">清除本地登录状态并返回登录页</span>
-        </div>
-        <ElButton type="danger" plain @click="handleLogout">退出登录</ElButton>
-      </div>
-    </div>
-
-    <div class="settings-section">
       <div class="section-title">反馈</div>
       <div class="settings-item">
         <div class="item-info">
@@ -56,9 +45,8 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { getVersion } from '@tauri-apps/api/app'
-import { ElButton, ElInputNumber, ElMessage, ElMessageBox } from 'element-plus'
+import { ElButton, ElInputNumber, ElMessage } from 'element-plus'
 import { useTrashStore } from '../../stores/trash'
-import { logout } from '../../stores/auth'
 
 const router = useRouter()
 const trashStore = useTrashStore()
@@ -76,21 +64,6 @@ function goFeedback() {
 async function handleCleanup() {
   await trashStore.cleanupTrash(cleanupDays.value)
   ElMessage.success(`已清理 ${cleanupDays.value} 天前的回收站记事本`)
-}
-
-async function handleLogout() {
-  try {
-    await ElMessageBox.confirm('确定要退出登录吗？', '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-    })
-    logout()
-    ElMessage.success('已退出登录')
-    router.push('/login')
-  } catch {
-    // User cancelled
-  }
 }
 </script>
 

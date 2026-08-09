@@ -56,4 +56,16 @@ public class AuthService {
     public User getCurrentUser(Long userId) {
         return userMapper.findById(userId);
     }
+
+    public void changePassword(Long userId, String oldPassword, String newPassword) {
+        User user = userMapper.findById(userId);
+        if (user == null) {
+            throw new RuntimeException("用户不存在");
+        }
+        // Password is SHA-256 hashed by frontend, compare directly
+        if (!oldPassword.equals(user.getPassword())) {
+            throw new RuntimeException("原密码错误");
+        }
+        userMapper.updatePassword(userId, newPassword);
+    }
 }

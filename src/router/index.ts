@@ -9,6 +9,7 @@ import Settings from '../views/settings/index.vue'
 import FeedbackPage from '../views/feedback/index.vue'
 import PetPage from '../views/pet/index.vue'
 import LoginPage from '../views/login/index.vue'
+import ChangePassword from '../views/user/change-password.vue'
 import { isLoggedIn } from '../stores/auth'
 
 const router = createRouter({
@@ -18,6 +19,11 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: LoginPage
+    },
+    {
+      path: '/user/password',
+      name: 'change-password',
+      component: ChangePassword
     },
     {
       path: '/',

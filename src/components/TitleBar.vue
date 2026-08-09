@@ -11,10 +11,10 @@
           <span class="title-text">记事本</span>
           <template #dropdown>
             <el-dropdown-menu class="user-dropdown-menu">
-              <div class="dropdown-user-info">
+              <el-dropdown-item command="profile">
                 <el-icon><User /></el-icon>
                 <span class="dropdown-username">{{ currentUsername }}</span>
-              </div>
+              </el-dropdown-item>
               <el-dropdown-item command="logout" divided>
                 <el-icon><SwitchButton /></el-icon>
                 退出登录
@@ -120,7 +120,9 @@ const weatherStore = useWeatherStore()
 const { weather, loading } = storeToRefs(weatherStore)
 
 function handleUserCommand(command: string) {
-  if (command === 'logout') {
+  if (command === 'profile') {
+    router.push('/user/password')
+  } else if (command === 'logout') {
     logout()
     ElMessage.success('已退出登录')
     router.push('/login')
@@ -220,17 +222,14 @@ async function handleClose() {
   outline: none !important;
 }
 
-.dropdown-user-info {
+.user-dropdown-menu :deep(.el-dropdown-menu__item) {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 16px;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--color-text-primary);
 }
 
 .dropdown-username {
+  display: inline-block;
   max-width: 180px;
   overflow: hidden;
   text-overflow: ellipsis;

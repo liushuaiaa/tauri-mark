@@ -13,3 +13,8 @@ export interface AuthResponse {
   username: string
   userId: number
 }
+
+export interface ChangePasswordRequest {
+  old_password: string
+  new_password: string
+}

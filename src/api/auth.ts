@@ -1,5 +1,5 @@
 import { request } from '../axios/client'
-import type { LoginRequest, RegisterRequest, AuthResponse } from './type/auth'
+import type { LoginRequest, RegisterRequest, AuthResponse, ChangePasswordRequest } from './type/auth'
 
 export class AuthApi {
   // 登录
@@ -33,6 +33,15 @@ export class AuthApi {
     return request<void>({
       method: 'POST',
       url: '/api/auth/logout'
+    })
+  }
+
+  // 修改密码
+  changePassword = (data: ChangePasswordRequest) => {
+    return request<void>({
+      method: 'POST',
+      url: '/api/auth/change-password',
+      data
     })
   }
 }

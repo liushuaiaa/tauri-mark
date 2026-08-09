@@ -37,7 +37,9 @@ import { useRoute } from 'vue-router'
 import { listen } from '@tauri-apps/api/event'
 
 const route = useRoute()
-const showSidebar = computed(() => route.name !== 'editor' && route.name !== 'day' && route.name !== 'login')
+const showSidebar = computed(() =>
+  route.name !== 'editor' && route.name !== 'day' && route.name !== 'login' && route.name !== 'change-password'
+)
 const isLoginPage = computed(() => route.name === 'login')
 
 const canvasRef = ref<HTMLCanvasElement | null>(null)

@@ -15,4 +15,7 @@ public interface UserMapper {
             "VALUES(#{username}, #{password}, NOW(), NOW())")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(User user);
+
+    @Update("UPDATE sys_user SET password = #{password}, updated_at = NOW() WHERE id = #{id}")
+    int updatePassword(@Param("id") Long id, @Param("password") String password);
 }
