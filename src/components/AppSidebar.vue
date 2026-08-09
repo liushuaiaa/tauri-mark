@@ -40,7 +40,6 @@ import {
   Delete,
   Memo,
   Setting,
-  Grid,
 } from '@element-plus/icons-vue'
 import { ElBadge, ElButton } from 'element-plus'
 import { sidebarCollapsed } from '../stores/sidebar'
@@ -56,7 +55,6 @@ const navItems = [
   { path: '/', name: '记事本', icon: markRaw(Memo) },
   { path: '/calendar', name: '日历', icon: markRaw(Calendar) },
   { path: '/trash', name: '回收站', icon: markRaw(Delete), showBadge: true },
-  { path: '/pet', name: '宠物', icon: markRaw(Grid) },
   { path: '/feedback', name: '反馈', icon: markRaw(ChatDotSquare) },
   { path: '/settings', name: '设置', icon: markRaw(Setting), hideWhenCollapsed: true },
 ]
@@ -65,7 +63,6 @@ const routeTitleMap: Record<string, string> = {
   '/': '记事本',
   '/calendar': '日历',
   '/trash': '回收站',
-  '/pet': '宠物',
   '/feedback': '反馈',
   '/settings': '设置',
 }
