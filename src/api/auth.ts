@@ -1,5 +1,5 @@
 import { request } from '../axios/client'
-import type { LoginRequest, RegisterRequest, AuthResponse, ChangePasswordRequest } from './type/auth'
+import type { LoginRequest, RegisterRequest, AuthResponse, RefreshRequest, ChangePasswordRequest } from './type/auth'
 
 export class AuthApi {
   // 登录
@@ -28,11 +28,21 @@ export class AuthApi {
     })
   }
 
-  // 退出登录
-  logout = () => {
+  // 刷新令牌（滑动续期）
+  refresh = (data: RefreshRequest) => {
+    return request<AuthResponse>({
+      method: 'POST',
+      url: '/api/auth/refresh',
+      data
+    })
+  }
+
+  // 退出登录（可携带 refresh token 通知后端吊销）
+  logout = (data?: RefreshRequest) => {
     return request<void>({
       method: 'POST',
-      url: '/api/auth/logout'
+      url: '/api/auth/logout',
+      data
     })
   }
 

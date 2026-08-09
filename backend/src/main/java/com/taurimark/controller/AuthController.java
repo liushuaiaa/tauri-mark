@@ -38,8 +38,23 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponse<AuthResponse>> refresh(@RequestBody RefreshRequest request) {
+        try {
+            AuthResponse response = authService.refresh(request.getRefreshToken());
+            return ResponseEntity.ok(ApiResponse.success(response));
+        } catch (Exception e) {
+            // 401 是给前端「刷新失败→登出」的信号，区别于 login/register 的 400
+            return ResponseEntity.status(401).body(ApiResponse.error(401, e.getMessage()));
+        }
+    }
+
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<Void>> logout() {
+    public ResponseEntity<ApiResponse<Void>> logout(@RequestBody(required = false) RefreshRequest request) {
+        // 兼容旧客户端：不传 body 也返回 200；传了 refresh token 则吊销（真正退出登录）
+        if (request != null && request.getRefreshToken() != null && !request.getRefreshToken().isEmpty()) {
+            authService.revokeRefreshToken(request.getRefreshToken());
+        }
         return ResponseEntity.ok(ApiResponse.success());
     }
 
