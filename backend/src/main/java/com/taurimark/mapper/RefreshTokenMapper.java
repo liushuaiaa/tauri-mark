@@ -11,6 +11,13 @@ public interface RefreshTokenMapper {
     int insert(RefreshToken refreshToken);
 
     @Select("SELECT * FROM refresh_tokens WHERE token_hash = #{tokenHash}")
+    @Results({
+        @Result(property = "userId", column = "user_id"),
+        @Result(property = "tokenHash", column = "token_hash"),
+        @Result(property = "expiresAt", column = "expires_at"),
+        @Result(property = "createdAt", column = "created_at"),
+        @Result(property = "updatedAt", column = "updated_at")
+    })
     RefreshToken findByTokenHash(@Param("tokenHash") String tokenHash);
 
     @Update("UPDATE refresh_tokens SET revoked = 1, updated_at = NOW() WHERE id = #{id} AND revoked = 0")
