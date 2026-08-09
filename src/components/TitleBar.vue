@@ -2,7 +2,27 @@
   <div class="title-bar">
     <div class="title-bar-title" @mousedown="startDrag">
       <div class="title-left">
-        <span class="title-text">记事本</span>
+        <el-dropdown
+          v-if="isLoggedIn"
+          trigger="hover"
+          @command="handleUserCommand"
+          class="user-dropdown"
+        >
+          <span class="title-text">记事本</span>
+          <template #dropdown>
+            <el-dropdown-menu class="user-dropdown-menu">
+              <div class="dropdown-user-info">
+                <el-icon><User /></el-icon>
+                <span class="dropdown-username">{{ currentUsername }}</span>
+              </div>
+              <el-dropdown-item command="logout" divided>
+                <el-icon><SwitchButton /></el-icon>
+                退出登录
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+        <span v-else class="title-text">记事本</span>
         <span v-if="showWeather && loading" class="weather-loading">
           <el-icon class="loading-icon"><Loading /></el-icon>
         </span>
@@ -69,11 +89,14 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { cursorEnabled } from '../stores/cursor'
 import { useWeatherStore } from '../stores/weather'
+import { isLoggedIn, currentUsername, logout } from '../stores/auth'
 import { storeToRefs } from 'pinia'
-import { Loading } from '@element-plus/icons-vue'
+import { Loading, User, SwitchButton } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
 
 interface Props {
   showWeather?: boolean
@@ -92,8 +115,17 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const appWindow = getCurrentWindow()
+const router = useRouter()
 const weatherStore = useWeatherStore()
 const { weather, loading } = storeToRefs(weatherStore)
+
+function handleUserCommand(command: string) {
+  if (command === 'logout') {
+    logout()
+    ElMessage.success('已退出登录')
+    router.push('/login')
+  }
+}
 
 onMounted(() => {
   if (props.showWeather) {
@@ -170,6 +202,28 @@ async function handleClose() {
 
 .title-text {
   flex-shrink: 0;
+}
+
+.user-dropdown {
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.dropdown-user-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.dropdown-username {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .weather-info {

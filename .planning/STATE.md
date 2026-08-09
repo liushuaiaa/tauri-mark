@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-08-09)
 Phase: 1 of 3 (退出登录)
 Plan: 0 of 1 in current phase
 Status: Ready to plan
-Last activity: 2026-08-09 — 完成 quick 任务 260809-ft1：项目内 GSD 遵循 .claude/rules（项目本地实现）
+Last activity: 2026-08-09 — 完成 quick 任务 260809-ft2：退出登录入口移到顶部标题栏 hover 下拉
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -57,7 +57,8 @@ None yet.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 260809-fnv | 突然发现当前程序没有退出账号的操作，请前后端一起加上 | 2026-08-09 | b2febd2 | [260809-fnv-add-logout](./quick/260809-fnv-add-logout/) |
-| 260809-ft1 | 当前项目运行 GSD 指令时遵循项目 .claude/rules 规则（项目本地实现） | 2026-08-09 | * | [260809-ft1-gsd-claude-rules](./quick/260809-ft1-gsd-claude-rules/) |
+| 260809-ft1 | 当前项目运行 GSD 指令时遵循项目 .claude/rules 规则（项目本地实现） | 2026-08-09 | acadebe | [260809-ft1-gsd-claude-rules](./quick/260809-ft1-gsd-claude-rules/) |
+| 260809-ft2 | 退出登录入口移到顶部标题栏「记事本」hover 下拉 | 2026-08-09 | * | [260809-ft2-logout-dropdown-titlebar](./quick/260809-ft2-logout-dropdown-titlebar/) |
 
 ## Deferred Items
 
