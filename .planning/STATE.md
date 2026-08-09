@@ -62,7 +62,7 @@ None yet.
 | 260809-ft3 | 移除「记事本」hover 下拉触发器的黑色 focus 描边 | 2026-08-09 | a035829 | [260809-ft3-dropdown-outline](./quick/260809-ft3-dropdown-outline/) |
 | 260809-ft4 | 修改密码页 + 顶部用户信息可点击 + 移除设置页退出 | 2026-08-09 | b1688b7 | [260809-ft4-change-password](./quick/260809-ft4-change-password/) |
 | 260809-ft5 | 「个人信息」页：展示用户基本信息 + 修改密码 | 2026-08-09 | a2af1c0 | [260809-ft5-user-profile](./quick/260809-ft5-user-profile/) |
-| 260809-ft6 | 去除宠物功能（侧边栏入口、路由、页面） | 2026-08-09 | * | [260809-ft6-remove-pet](./quick/260809-ft6-remove-pet/) |
+| 260809-ft6 | 去除宠物功能（侧边栏入口、路由、页面） | 2026-08-09 | 7871bfd | [260809-ft6-remove-pet](./quick/260809-ft6-remove-pet/) |
 
 ## Deferred Items
 
