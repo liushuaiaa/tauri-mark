@@ -8,7 +8,9 @@
       "Bash(git commit:*)",
       "Bash(git checkout:*)",
       "Bash(git merge:*)",
-      "Bash(mysql *)"
+      "Bash(mysql *)",
+      "Skill(gsd-new-project)",
+      "Skill(gsd-new-project:*)"
     ]
   }
 }
