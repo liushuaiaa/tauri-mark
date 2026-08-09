@@ -209,6 +209,12 @@ async function handleClose() {
   cursor: pointer;
   color: #fff;
 }
+.user-dropdown:focus,
+.user-dropdown:focus-visible,
+.user-dropdown:focus-within,
+.user-dropdown:hover {
+  outline: none;
+}
 
 .dropdown-user-info {
   display: flex;
