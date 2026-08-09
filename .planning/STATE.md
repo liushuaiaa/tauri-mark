@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-08-09)
 Phase: 1 of 3 (退出登录)
 Plan: 0 of 1 in current phase
 Status: Ready to plan
-Last activity: 2026-08-09 — 完成 quick 任务 260809-ft4：修改密码页 + 顶部用户信息可点击 + 移除设置页退出
+Last activity: 2026-08-09 — 完成 quick 任务 260809-ft5：「个人信息」页（基本信息 + 修改密码）
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -60,7 +60,8 @@ None yet.
 | 260809-ft1 | 当前项目运行 GSD 指令时遵循项目 .claude/rules 规则（项目本地实现） | 2026-08-09 | acadebe | [260809-ft1-gsd-claude-rules](./quick/260809-ft1-gsd-claude-rules/) |
 | 260809-ft2 | 退出登录入口移到顶部标题栏「记事本」hover 下拉 | 2026-08-09 | 9e23ac4 | [260809-ft2-logout-dropdown-titlebar](./quick/260809-ft2-logout-dropdown-titlebar/) |
 | 260809-ft3 | 移除「记事本」hover 下拉触发器的黑色 focus 描边 | 2026-08-09 | a035829 | [260809-ft3-dropdown-outline](./quick/260809-ft3-dropdown-outline/) |
-| 260809-ft4 | 修改密码页 + 顶部用户信息可点击 + 移除设置页退出 | 2026-08-09 | * | [260809-ft4-change-password](./quick/260809-ft4-change-password/) |
+| 260809-ft4 | 修改密码页 + 顶部用户信息可点击 + 移除设置页退出 | 2026-08-09 | b1688b7 | [260809-ft4-change-password](./quick/260809-ft4-change-password/) |
+| 260809-ft5 | 「个人信息」页：展示用户基本信息 + 修改密码 | 2026-08-09 | * | [260809-ft5-user-profile](./quick/260809-ft5-user-profile/) |
 
 ## Deferred Items
 

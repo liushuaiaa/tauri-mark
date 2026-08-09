@@ -38,7 +38,7 @@ import { listen } from '@tauri-apps/api/event'
 
 const route = useRoute()
 const showSidebar = computed(() =>
-  route.name !== 'editor' && route.name !== 'day' && route.name !== 'login' && route.name !== 'change-password'
+  route.name !== 'editor' && route.name !== 'day' && route.name !== 'login' && route.name !== 'profile'
 )
 const isLoginPage = computed(() => route.name === 'login')
 

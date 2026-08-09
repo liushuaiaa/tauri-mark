@@ -121,7 +121,7 @@ const { weather, loading } = storeToRefs(weatherStore)
 
 function handleUserCommand(command: string) {
   if (command === 'profile') {
-    router.push('/user/password')
+    router.push('/user')
   } else if (command === 'logout') {
     logout()
     ElMessage.success('已退出登录')
